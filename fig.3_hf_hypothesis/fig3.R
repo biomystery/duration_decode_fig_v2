@@ -130,7 +130,7 @@ p<- p  + theme_bw()+ theme(axis.title = element_blank(),
 
 ggsave(filename = paste0(subfig_dir,'fig3_simCmp.eps'),height = 2,width = 2,plot = p)
 
-# fig3C-half-life ---------------------------------------------------------
+# Fig3D: LT.sp vs. half-life ---------------------------------------------------------
 
 genes.hf <- read.csv(file="../data/v4-hf-final.csv",row.names = 1,stringsAsFactors = F)
 genes.sp <- read.csv(file="../data/mRNA.sp.peak.csv",row.names = 1,stringsAsFactors = F)
