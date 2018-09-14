@@ -1,0 +1,6 @@
+v2 - fit kt;
+v3 - delay + kt 
+v4 - delay + kt + kdeg
+v5 - kt + kdeg
+v6
+v7 

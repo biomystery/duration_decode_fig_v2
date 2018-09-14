@@ -1,0 +1,95 @@
+---
+title: "Fig3 Exploration"
+output: 
+  html_notebook:
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    theme: united
+    highlight: tango
+author: "Frank"
+date: "`r date()`"
+---
+
+```{r,warning=F,message=F}
+source(file='../auxilary_functions.R')
+```
+
+# Update the heatmap to peak genes
+## Check the old version 
+```{r}
+# get experimental data 
+maxScale.mRNA <- plotExp(dtype = 'mRNA',scale = "geno",savetofile = F)
+maxScale.mRNA$cond <- NULL 
+v1.simData <- read.csv(file='../fig.4_modelfit/mRNA-Fit-avg-sp-v1c/bestFit.tc.csv',
+                       stringsAsFactors = F)
+length(unique(v1.simData$gene))
+```
+
+Only 69 genes, this means my previous results are for the LPS specific genes only, using the average metrics. 
+
+See how many of these genes are in the new list: 
+
+```{r}
+# load the new list 
+new.list <- read.csv(file='../fig.2_knockout/mRNA.cat.csv',stringsAsFactors = F)
+old.list <- unique(v1.simData$gene)
+all.list <- list(old.list=old.list,
+                new.list = (new.list %>% filter(cate=='III'))$gene.2)
+venn::venn(all.list,
+           zcolor = 'style')
+```
+
+Then I need to update the fitting results for the 36 genes in the new list. 
+
+Did I fit all the genes???
+
+- No. Only selected the 69 genes to fit. 
+
+
+
+
+## How about the new genes
+```{r}
+# only in new list
+setdiff(all.list$new.list,all.list$old.list)
+# only in old list
+setdiff(all.list$old.list,all.list$new.list)
+```
+
+Plot a few genes that are only in the new list:
+
+```{r}
+rpkm_all <- read.csv(file = '../data/mRNA.nfkbgene.rpkm.csv',stringsAsFactors = F,row.names = 1,header = T)
+
+selc <- c("Klf10",  "Mt2" ,   "Ikbke") 
+p1 <- fun.plotExp(rpkm_all ,selc)
+p2<- fun.plotExp(rpkm_all ,selc,scale = T)
+multiplot(p1,p2,
+          layout = matrix(c(1,2),ncol = 2))
+
+```
+Only in the old list:
+```{r}
+selc <- c("Tnfaip3",  "Relb" ,   "Vcam1") 
+p1 <- fun.plotExp(rpkm_all ,selc)
+p2<- fun.plotExp(rpkm_all ,selc,scale = T)
+multiplot(p1,p2,
+          layout = matrix(c(1,2),ncol = 2))
+
+```
+
+It seems that the old list (based on average and sp.mt - sp.ctrl <= 0.5) is more reliable than the peak method. It could due to the peak selection careteria is changed to $sp.mt < sp.ctrl\cdot2^{-0.5}$).
+
+## Single fit function 
+This section will introduce the fitting strategy for each gene using model v1. 
+
+$$\frac{d[mRNA]}{dt}=k_b + k_t\cdot \frac{[NF\kappa B_n(t-\tau)]^N}{[NF\kappa B_n(t-\tau)]^N+K_D^N} -k_{deg}\cdot[mRNA]
+$$
+
+Algorithm:
+
+- minimize the least squared error between model and data 
+- weighted the specificity metrics
+
+The objective function: 

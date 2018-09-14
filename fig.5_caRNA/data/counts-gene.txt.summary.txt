@@ -1,0 +1,12 @@
+Status	C16.filtered.bam	C48.filtered.bam	C8.filtered.bam	ifnarikba-dko-T8.filtered.bam	T0.filtered.bam	T16.filtered.bam	T1.filtered.bam	T48.filtered.bam	T4.filtered.bam	T8.filtered.bam
+Assigned	13619708	15776654	13354913	5379451	22507195	13133799	24013897	13203957	16278244	14950628
+Unassigned_Ambiguity	186497	218573	184859	118581	312609	198107	321666	183130	214000	194182
+Unassigned_MultiMapping	0	0	0	0	0	0	0	0	0	0
+Unassigned_NoFeatures	19694732	17435198	17069686	12917226	4364652	19869305	4202165	17276457	23558912	19065057
+Unassigned_Unmapped	0	0	0	0	0	0	0	0	0	0
+Unassigned_MappingQuality	0	0	0	0	0	0	0	0	0	0
+Unassigned_FragmentLength	0	0	0	0	0	0	0	0	0	0
+Unassigned_Chimera	0	0	0	0	0	0	0	0	0	0
+Unassigned_Secondary	0	0	0	0	0	0	0	0	0	0
+Unassigned_Nonjunction	0	0	0	0	0	0	0	0	0	0
+Unassigned_Duplicate	0	0	0	0	0	0	0	0	0	0

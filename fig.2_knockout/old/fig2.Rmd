@@ -1,0 +1,113 @@
+---
+title: "Fig.2 exploration"
+output: 
+  html_notebook:
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    theme: united
+    highlight: tango
+    code_folding: hide
+author: "Frank"
+date: "`r date()`"
+---
+```{r,warning=F,message=F}
+source(file='../auxilary_functions.R')
+```
+
+# fig2G-examples
+## The scatter of peak sp 
+```{r,warning=F,message=F}
+require(plotly)
+sp.mat <- read.csv(file='../data/mRNA.sp.peak.csv',row.names = 1,stringsAsFactors = F)
+pd <- data.frame(ctrl.sp= sp.mat$b1.LT.ctrl,
+                 mt.sp = sp.mat$b1.LI.ko,
+                 gene = rownames(sp.mat),
+                 stringsAsFactors = T) 
+p <- ggplot(pd,aes(ctrl.sp,mt.sp)) + geom_point(aes(text=gene))+ xlim(range(pd[,1:2])) + ylim(range(pd[,1:2]))+
+  geom_abline(slope = 1,intercept = 0,colour=grey(.8)) +
+  geom_abline(slope = c(1/1.5,1.5),intercept = 0,colour=grey(.6),linetype=3) +
+  geom_abline(slope = c(1/2,2),intercept = 0,colour=grey(.4),linetype=3) +
+  geom_hline(yintercept = c(-.5,.5),colour=grey(.8))+
+  geom_vline(xintercept = c(-.5,.5),colour=grey(.8)) + 
+  geom_abline(slope = 1,intercept = -.5,linetype=2,colour='blue') +  theme_bw()
+ggplotly(p,tooltip = c("gene","ctrl.sp","mt.sp"))
+```
+
+
+## Selected examples set 1 
+```{r}
+rpkm_all <- read.csv(file = '../data/mRNA.nfkbgene.rpkm.csv',stringsAsFactors = F,row.names = 1,header = T)
+#rpkm_all <- pd[,!grepl('[.]ifnr[.]',colnames(pd))]
+k_ord<-read.csv(file = '../data/mRNA.cluster.csv',stringsAsFactors = F)
+all.equal(rownames(rpkm_all),k_ord$gene)
+
+
+selc <- c("Il1a",  "Ccl5" ,   "Fos") 
+p1 <- fun.plotExp(rpkm_all ,selc)
+p2<- fun.plotExp(rpkm_all ,selc,scale = T)
+multiplot(p1,p2,
+          layout = matrix(c(1,2),ncol = 2))
+
+```
+
+We need resacale the y-axis to the max 
+
+
+Let's highlight those selections in the scatter:
+```{r}
+p %+% geom_point(data= p$data %>% filter(gene %in% selc),aes(ctrl.sp,mt.sp),colour='blue',size=2)
+```
+
+
+## Selected examples set 2
+Check few more examples
+```{r}
+selc.2=c('Irg1','Ifnb','Mmp3')
+# no scaling
+p1 <-fun.plotExp(rpkm_all,selc=selc.2); p2 <-fun.plotExp(rpkm_all,selc=selc.2,scale = T)
+multiplot(p1,p2,
+          layout = matrix(c(1,2),ncol = 2))
+#scaling
+
+```
+
+## conclusion
+
+We will use the following genes: 
+
++ Ccl5 - positive control 
++ Fos - non-specific gene 
++ IL1a - LPS-specific genes but not dynamics dependent. 
+
+# Gene category exploration 
+
+## devide the genes into 3 categories 
+
+```{r}
+pd <- pd %>% mutate(cate=ifelse(ctrl.sp<0.5,'I',
+                          ifelse(mt.sp>ctrl.sp*2^(-.5),'II','III')))
+table(pd$cate)
+ggplot(data.frame(pd %>% count(cate),dummy=1),
+       aes(dummy,n,fill=cate)) +geom_bar(stat = 'identity')+
+  coord_flip()+ scale_y_reverse()+scale_fill_manual(values = alpha(c("blue"), c(.05,.1,.2)))+
+  theme_void()+ theme(legend.position = 'none')
+```
+## compare with the average list 
+
+```{r}
+v1.simData <- read.csv(file='../fig.4_modelfit/mRNA-Fit-avg-sp-v1c/bestFit.tc.csv',
+                       stringsAsFactors = F)
+new.list <- read.csv(file='../fig.2_knockout/mRNA.cat.csv',stringsAsFactors = F)
+old.list <- unique(v1.simData$gene)
+all.list <- list(old.list=old.list,
+                new.list = (new.list %>% filter(cate=='III'))$gene.2)
+
+# check genes only in old list
+ggplotly(p + geom_point(data=subset(p$data,gene %in% (new.list%>% filter(gene.2 %in% setdiff(all.list$old.list,all.list$new.list)))$gene),aes(text=gene),colour='red'),tooltip = c("gene","ctrl.sp","mt.sp"))
+
+# check genes only in new list
+ggplotly(p + geom_point(data=subset(p$data,gene %in% (new.list%>% filter(gene.2 %in% setdiff(all.list$new.list,all.list$old.list)))$gene),aes(text=gene),colour='red'),tooltip = c("gene","ctrl.sp","mt.sp"))
+
+```
+

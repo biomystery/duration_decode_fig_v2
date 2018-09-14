@@ -1,0 +1,12 @@
+Status	filtered.alpha-0.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.alpha-L0-5.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.alpha-L1.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.alpha-L2.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.alpha-L4.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.alpha-L8.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.alpha-T0-5.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.alpha-T1.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.alpha-T2.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.alpha-T4.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.alpha-T8.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-0.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-L0-5.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-L1.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-L2.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-L4.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-L8.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-T0-5.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-T1.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-T2.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-T4.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam	filtered.ifnar-T8.fastq.trim.fastq.gzAligned.sortedByCoord.out.bam
+Assigned	4279475	4075407	5305614	5069396	4631574	4628980	4107189	3129083	3211493	2462512	702577	5965245	4464209	3947025	3964064	4338716	4602742	5755490	5448175	7336487	3618919	5486593
+Unassigned_Ambiguity	62830	57631	76624	73823	69785	72550	61227	48843	47141	37536	15932	87722	66813	58125	55456	60839	70414	92828	81211	108695	59955	88163
+Unassigned_MultiMapping	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_NoFeatures	9472481	9809919	12589991	11188080	10311508	11805567	9584419	6593246	7358023	6060048	1712304	14424003	10608464	8711637	8969277	10639437	10761425	12758076	11461552	17091217	7893021	14049762
+Unassigned_Unmapped	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_MappingQuality	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_FragmentLength	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Chimera	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Secondary	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Nonjunction	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Duplicate	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0

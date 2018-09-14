@@ -1,0 +1,2 @@
+mRNA-Fit-avg-sp-v1: k0, kt, kd
+mRNA-Fit-avg-sp-v1b: k0, kt, kd, kneg 

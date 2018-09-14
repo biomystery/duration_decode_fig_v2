@@ -1,0 +1,14 @@
+cmp_models*
+plotAllFit.R
+*.DS_Store
+*.Rapp.history
+**/.Rapp.history
+.Rproj.user/* 
+**/.Rproj.user/* 
+*\#*
+*.Rproj.user
+*history
+.Rproj.user
+figures/Fig.[3-7]/*
+*~*
+*/.RData

@@ -1,0 +1,12 @@
+Status	alpha-L1.bam	alpha-L23.bam	alpha-L30.bam	alpha-L4.bam	alpha-T1.bam	alpha-T2.bam	alpha-T30.bam	alpha-T4.bam	ifnar-L1.bam	ifnar-L2.bam	ifnar-L30.bam	ifnar-L4.bam	ifnar-T1.bam	ifnar-T2.bam	ifnar-T30.bam	ifnar-T4.bam
+Assigned	1182628	1135284	1045050	1596827	1092917	1083630	1067108	1056645	1359033	1029699	871239	1024294	993612	1023664	891361	686987
+Unassigned_Ambiguity	906961	892682	814434	1430835	832917	830454	821493	929569	1128687	796090	661271	805343	751084	797704	677358	600562
+Unassigned_MultiMapping	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_NoFeatures	7001929	6591134	6296982	5870418	6333695	6471549	6188364	3391456	4456898	5588747	4814326	5093833	5266414	5304295	4915858	2432191
+Unassigned_Unmapped	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_MappingQuality	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_FragmentLength	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Chimera	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Secondary	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Nonjunction	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Duplicate	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0

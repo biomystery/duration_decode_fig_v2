@@ -1,0 +1,5 @@
+Figure 1
+
+Identifying the differential induced genes in MEFs. (A) The signaling transduction diagram for TNF, IL1 and LPS in activating downstream gene expression through transcriptional factors AP1, NF¦ÊB and IRF3/ISGF3, with percentages of genes identified in Cheng et al. 2017 (Christine¡¯s paper). (B) Gene expression profile of the 177 differential induced genes in Ifnar-/- MEF under LPS 30 mins pulse treatment. The pairwise specificity (LvsT) for each gene is defined by log2 ratio of maximum gene expression in LPS treatment vs. TNF treatments. Similar for LvsI (LPS vs. IL1) and TvsI (TNF vs. IL1). (C) LPS vs. IL1 specificity correlates to LPS vs. TNF specificity. (D) Pie chart of three categories of genes when using two different thresholds. Green, red and gray represent TNF-specific, LPS-specific or non-specific when do LPS vs. TNF comparison. TNF-specific is defined when gene¡¯s LvsT specificity value < - threshold; LPS-specific is defined when gene¡¯s LvsT specificity value > threshold; if gene¡¯s LvsT is within [-threshold, threshold], it is categorized as non-specific. 
+
+

@@ -1,0 +1,8 @@
+Gdf15 Not LPS-specific
+Ifih1 I (but changed basal in mutant)
+Ifnb1 I (but changed basal in mutant)
+Irg1 I
+Oasl1 I 
+Rsad2 I 
+Zc3h12a I
+   

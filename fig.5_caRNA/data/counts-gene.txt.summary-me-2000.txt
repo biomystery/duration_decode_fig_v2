@@ -1,0 +1,12 @@
+Status	ifnar-0.filtered.bam	ifnar-L05.filtered.bam	ifnar-L1.filtered.bam	ifnar-L2.filtered.bam	ifnar-L4.filtered.bam	ifnar-L8.filtered.bam	ifnar-T05.filtered.bam	ifnar-T1.filtered.bam	ifnar-T2.filtered.bam	ifnar-T4.filtered.bam	ifnar-T8.filtered.bam	ifnarikba-0.filtered.bam	ifnarikba-L05.filtered.bam	ifnarikba-L1.filtered.bam	ifnarikba-L2.filtered.bam	ifnarikba-L4.filtered.bam	ifnarikba-L8.filtered.bam	ifnarikba-T05.filtered.bam	ifnarikba-T1.filtered.bam	ifnarikba-T2.filtered.bam	ifnarikba-T4.filtered.bam	ifnarikba-T8.filtered.bam
+Assigned	2134455	1877810	1433773	1527460	1681753	1682473	2435128	2257811	2808926	1492630	1992969	1733637	1662638	1809541	2103119	1873653	1627961	1791070	1483555	1389563	1110582	251981
+Unassigned_Ambiguity	33789	30272	22858	23135	25218	27365	42381	36193	44526	26381	34581	27312	24856	27541	32872	30033	27151	28451	24790	22047	17972	6135
+Unassigned_MultiMapping	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_NoFeatures	5668696	4856206	3454229	3827599	4529733	4260857	5863129	5170121	7222982	3483399	5502208	4166108	4405756	4692027	5030513	4458222	4475556	4525587	3403599	3518551	2922201	587245
+Unassigned_Unmapped	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_MappingQuality	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_FragmentLength	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Chimera	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Secondary	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Nonjunction	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Duplicate	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0

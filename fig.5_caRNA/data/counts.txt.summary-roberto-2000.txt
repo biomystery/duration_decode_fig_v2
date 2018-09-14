@@ -1,0 +1,12 @@
+Status	alpha-0.bam	alpha-L0-5.bam	alpha-L1.bam	alpha-L2.bam	alpha-L4.bam	alpha-L8.bam	alpha-T0-5.bam	alpha-T1.bam	alpha-T2.bam	alpha-T4.bam	alpha-T8.bam	ifnar-0.bam	ifnar-L0-5.bam	ifnar-L1.bam	ifnar-L2.bam	ifnar-L4.bam	ifnar-L8.bam	ifnar-T0-5.bam	ifnar-T1.bam	ifnar-T2.bam	ifnar-T4.bam	ifnar-T8.bam
+Assigned	5211511	5401109	5735288	6265495	5449173	5420600	5609970	4266109	4300126	3522471	721530	6843543	5953132	4274811	4628589	5374844	5280951	7285307	6499726	8794230	4311677	6619281
+Unassigned_Ambiguity	145839	145032	154316	170496	156881	153530	155231	117513	115828	101185	23613	191144	162903	116544	125697	153835	148932	205524	173533	242482	130162	188936
+Unassigned_MultiMapping	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_NoFeatures	342149	347343	384610	443163	494176	363909	364520	293061	289832	310936	57616	473993	404038	308351	341563	454509	361234	505330	462197	615569	367575	461748
+Unassigned_Unmapped	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_MappingQuality	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_FragmentLength	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Chimera	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Secondary	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Nonjunction	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+Unassigned_Duplicate	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
