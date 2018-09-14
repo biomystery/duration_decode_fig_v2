@@ -130,28 +130,6 @@ p<- p  + theme_bw()+ theme(axis.title = element_blank(),
 
 ggsave(filename = paste0(subfig_dir,'fig3_simCmp.eps'),height = 2,width = 2,plot = p)
 
-# fig3B-construct ---------------------------------------------------------
-pd.construct <- read.csv(file='~/Dropbox/Projects/DurationDecoding/data/Reporter/Final- WT3T3 reporter half-lives.csv')
-str(pd.construct)
-require(ggplot2)
-
-qplot(data = pd.construct,x=time,y=log2fold,colour=stimuli,linetype=genotype,geom = c("line","point"))
-last_plot() + facet_wrap(~gene)
-
-pd.construct$genotype <- relevel(pd.construct$genotype,ref = "wt")
-pd.construct<- subset(pd.construct,stimuli != "TNFc")
-
-require(dplyr)
-tmp <- pd.construct %>% 
-  mutate(fold=2^log2fold) %>% 
-  group_by(gene,genotype) %>%
-  mutate(frac=fold/max(fold))  
-p.3b<-qplot(data = tmp,x=time,y=frac,colour=stimuli,shape=genotype,linetype=genotype,geom = c("line","point"))
-p.3b <- p.3b + facet_grid(genotype~gene) + theme_bw() + scale_x_continuous(breaks = unique(tmp$time))
-p.3b <-p.3b + scale_color_manual(values = col.map) + xlab("Time (hr)") + ylab('Expression level')
-p.3b<-p.3b + theme(strip.text.x=element_blank(),strip.text.y=element_blank())
-ggsave(filename = paste0(subfig_dir,'subfig3b.eps'),width = 6,height = 4,scale = .75)
-
 # fig3C-half-life ---------------------------------------------------------
 
 genes.hf <- read.csv(file="../data/v4-hf-final.csv",row.names = 1,stringsAsFactors = F)
