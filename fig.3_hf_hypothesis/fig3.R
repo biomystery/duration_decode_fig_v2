@@ -134,8 +134,10 @@ ggsave(filename = paste0(subfig_dir,'fig3_simCmp.eps'),height = 2,width = 2,plot
 
 genes.hf <- read.csv(file="../data/v4-hf-final.csv",row.names = 1,stringsAsFactors = F)
 genes.sp <- read.csv(file="../data/mRNA.sp.peak.csv",row.names = 1,stringsAsFactors = F)
+all(rownames(genes.hf)%in% rownames(genes.sp))
 genes.sp <- genes.sp[rownames(genes.hf),]
-all.equal(rownames(genes.hf),rownames(genes.sp))
+data.frame(rownames(genes.hf) ,rownames(genes.sp))
+rownames(genes.hf)
 
 pd <- data.frame(hf_log10=genes.hf[,1],
                  lt_sp = genes.sp[,1],
@@ -156,9 +158,9 @@ ggplot(pd.gg,aes(halflife,sp)) + geom_boxplot(aes(fill=genotype),outlier.shape=N
 ggsave(filename = paste0(subfig_dir,'subfig3c_2.eps'),width = 3,height = 3)
 
 
-# fig3D- ActD-seq heatmaps  -----------------------------------------------
+# Fig3D: ActD-seq heatmaps  -----------------------------------------------
 # read the half-life data 
-pd.hf.raw <- read.csv(file='../../half-life/Supriya/ActDBrowser/allNormCount.csv',
+pd.hf.raw <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/allNormCount.csv',
                       stringsAsFactors = F)
 kb.genes <- read.csv(file='../data/mRNA.cluster.csv',stringsAsFactors = F)
 pd.hf.raw <- subset(pd.hf.raw, X %in% kb.genes$X)
