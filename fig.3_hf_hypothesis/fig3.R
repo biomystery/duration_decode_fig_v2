@@ -1,18 +1,19 @@
 source('../auxilary_functions.R')
-fig_folder <- '~/Dropbox/Projects/DurationDecoding/figure/Fig.3-4/subfigs/'
+subfig_dir <- '../figures/Fig.3/subfigs/'
 
-# fig3A.sim wt  ---------------------------------------------------------------
+# Fig3A: wt  ---------------------------------------------------------------
 
 # do simulation for heatmap 
 if(F){
   hfs<- 10^seq(0,3,length.out = 50)
   sim.data <- fun.runSim(hf = hfs,n = 6)
-  save(file = 'half-life-sim-n6.Rdata',sim.data)
+  save(file = 'half-life-sim-ctrl.Rdata',sim.data)
 }
- # heatmap
+ 
+# heatmap
 figs.ctrl <-plotHMsim(geno='ctrl',forFig = T)
 setEPS()
-postscript(file=paste0(fig_folder,'fig3A_hm_ctrl.eps'),width = 4,height = 4)
+postscript(file=paste0(subfig_dir,'fig3A_hm_ctrl.eps'),width = 4,height = 4)
 with(figs.ctrl,multiplot(tf.p,p,layout = matrix(c(1,rep(2,9)),ncol = 1)))
 dev.off()
 
@@ -20,7 +21,7 @@ dev.off()
 
 hf<- c(60*8,60,5)
 p.lines <- plotSimEg(hfs=hf)
-ggsave(filename = paste0(fig_folder,'fig3A_lines.eps'),plot = p.lines,width = 2,height = 4)
+ggsave(filename = paste0(subfig_dir,'fig3A_lines.eps'),plot = p.lines,width = 2,height = 4)
 
 if(F){
   pd.2 <- get_fig3_pdata(hfs = hfs,is_ggplot = T,simdata = fun.runSim(hf=hfs,n=3))
@@ -62,21 +63,21 @@ fig3a_dySp <-ggplot(sum.sim1,aes(x=ratio_type,y=hf,group=ratio_type)) +
                      legend.position="none",
                      plot.margin=margin()) +
   geom_hline(yintercept = c(log10(30),2),linetype=2,color='grey60')
-ggsave(filename = paste0(fig_folder,'fig3a_ctrl_peak.eps'),
+ggsave(filename = paste0(subfig_dir,'fig3a_ctrl_peak.eps'),
        plot = fig3a_dySp %+% subset(sum.sim1,ratio_type=='ratio.peak'),width = 1,height = 4,scale = 2.5/4)
 
-# fig3A.mt.sim hm ---------------------------------------------------------
+# Fig3B:mt hm ---------------------------------------------------------
 
 figs <-plotHMsim(geno='mt',forFig = T)
 setEPS()
-postscript(file=paste0(fig_folder,'fig3A_hm_mt.eps'),width = 4,height = 4)
+postscript(file=paste0(subfig_dir,'fig3A_hm_mt.eps'),width = 4,height = 4)
 with(figs,multiplot(tf.p,p,layout = matrix(c(1,rep(2,9)),ncol = 1)))
 dev.off()
 
 
 hf<- c(60*8,60,5)
 p.lines <- plotSimEg(hfs=hf,genotype = 'mt')
-ggsave(filename = paste0(fig_folder,'fig3A_lines_mt.eps'),plot = p.lines,width = 2,height = 4)
+ggsave(filename = paste0(subfig_dir,'fig3A_lines_mt.eps'),plot = p.lines,width = 2,height = 4)
 
 ## mt.
 sum.sim2 <- figs$p$data %>% 
@@ -101,10 +102,10 @@ fig3a_dySp <-ggplot(sum.sim2,aes(x=ratio_type,y=hf,group=ratio_type))  + geom_ti
                                 legend.position="none",
                                 plot.margin=margin()) + 
   geom_hline(yintercept = c(log10(30),2),linetype=2,color='grey60')
-ggsave(filename = paste0(fig_folder,'fig3a_mt_peak.eps'),
-       plot = fig3a_dySp %+% subset(tmp,ratio_type=='ratio.peak'),width = 1,height = 4,scale = 2.5/4)
+ggsave(filename = paste0(subfig_dir,'fig3a_mt_peak.eps'),
+       plot = fig3a_dySp %+% subset(sum.sim2,ratio_type=='ratio.peak'),width = 1,height = 4,scale = 2.5/4)
 
-# fig3A-sim cmp ctrl and mt ---------------------------------------------------------
+# Fig3C: sim cmp ctrl and mt ---------------------------------------------------------
 pd <- data.frame(rbind(sum.sim1,sum.sim2),
                  geno=rep(c('ctrl.','mt.'),each=nrow(sum.sim1)))
 pd$Sp <- log2(pd$ratio)
@@ -120,14 +121,15 @@ p<- p+geom_line(data=pd%>% filter(ratio_type=="ratio.peak"),
                 aes(linetype=geno))+ xlab("log10(mins)")+
   geom_vline(xintercept = c(log10(30),2),linetype=2,color='grey60')+
   geom_hline(yintercept = 0.5,linetype=2,color='grey60')
-p  + theme_bw()+ theme(axis.title = element_blank(),
+p<- p  + theme_bw()+ theme(axis.title = element_blank(),
                        axis.text = element_blank(),
                        legend.position = 'none') + 
   coord_cartesian(xlim=range(pd$hf),ylim=range(pd$Sp),expand = T) + 
   geom_vline(xintercept = seq(0,3,by=.5),colour=grey(.9),size=.2)+
   geom_hline(yintercept = seq(0,2,by=.5),colour=grey(.9),size=.2)
 
-ggsave(filename = paste0(fig_folder,'fig3_simCmp.eps'),height = 2,width = 2)
+ggsave(filename = paste0(subfig_dir,'fig3_simCmp.eps'),height = 2,width = 2,plot = p)
+
 # fig3B-construct ---------------------------------------------------------
 pd.construct <- read.csv(file='~/Dropbox/Projects/DurationDecoding/data/Reporter/Final- WT3T3 reporter half-lives.csv')
 str(pd.construct)
@@ -148,7 +150,7 @@ p.3b<-qplot(data = tmp,x=time,y=frac,colour=stimuli,shape=genotype,linetype=geno
 p.3b <- p.3b + facet_grid(genotype~gene) + theme_bw() + scale_x_continuous(breaks = unique(tmp$time))
 p.3b <-p.3b + scale_color_manual(values = col.map) + xlab("Time (hr)") + ylab('Expression level')
 p.3b<-p.3b + theme(strip.text.x=element_blank(),strip.text.y=element_blank())
-ggsave(filename = paste0(fig_folder,'subfig3b.eps'),width = 6,height = 4,scale = .75)
+ggsave(filename = paste0(subfig_dir,'subfig3b.eps'),width = 6,height = 4,scale = .75)
 
 # fig3C-half-life ---------------------------------------------------------
 
@@ -173,7 +175,7 @@ ggplot(pd.gg,aes(halflife,sp)) + geom_boxplot(aes(fill=genotype),outlier.shape=N
   scale_y_continuous(limits = quantile(pd.gg$sp, c(0.1, 0.9)))+
   theme(axis.title = element_blank(),legend.position = 'none',axis.text = element_blank())
 
-ggsave(filename = paste0(fig_folder,'subfig3c_2.eps'),width = 3,height = 3)
+ggsave(filename = paste0(subfig_dir,'subfig3c_2.eps'),width = 3,height = 3)
 
 
 # fig3D- ActD-seq heatmaps  -----------------------------------------------
@@ -211,30 +213,30 @@ cols <- colorRampPalette(brewer.pal(n = 7, name =
 cols<- cols[8:15]
 
 for(i in 1:2){
-  setEPS(); postscript(file=paste0(fig_folder,'hf-val-rp',i,'.eps'),height = 14,width = 3)  
+  setEPS(); postscript(file=paste0(subfig_dir,'hf-val-rp',i,'.eps'),height = 14,width = 3)  
   pheatmap(pd.hf.cut[ord,i],scale = 'none',breaks= 1:(length(pd.hf.bks)-1),
            cluster_cols = F,show_rownames = F,color = cols,border_color = "grey60",
            cluster_rows = F,cellwidth = 12,show_colnames = F,legend = F)
   dev.off()  
 }
-plotLegend(cols,bks = pd.hf.bks,fnames = paste0(fig_folder,'hf-heatmap-lg.eps'))
+plotLegend(cols,bks = pd.hf.bks,fnames = paste0(subfig_dir,'hf-heatmap-lg.eps'))
 
 bks <- seq(0,-7,by=-0.5)
 cols <- colorRampPalette(brewer.pal(n = 11, name ="BrBG")[6:11])(length(bks)-1)
 
-setEPS(); postscript(file=paste0(fig_folder,'hf-hm-rp',1,'.eps'))  
+setEPS(); postscript(file=paste0(subfig_dir,'hf-hm-rp',1,'.eps'))  
 pheatmap(pd.hf.proc[ord,1:5],scale = 'none',
          cluster_cols = F,show_rownames = F,color = cols,
          cluster_rows = F,cellwidth = 24,show_colnames = F,legend = F)
 dev.off()  
 
-setEPS(); postscript(file=paste0(fig_folder,'hf-hm-rp',2,'.eps'))  
+setEPS(); postscript(file=paste0(subfig_dir,'hf-hm-rp',2,'.eps'))  
 pheatmap(pd.hf.proc[ord,6:11],scale = 'none',
          cluster_cols = F,show_rownames = F,color = cols,
          cluster_rows = F,cellwidth = 24,show_colnames = F,legend = F)
 dev.off()  
 
-plotLegend(cols,bks = bks,fnames = paste0(fig_folder,'hf-heatmap-cnt-lg.eps'))
+plotLegend(cols,bks = bks,fnames = paste0(subfig_dir,'hf-heatmap-cnt-lg.eps'))
 # fig3D-ActD example ------------------------------------------------------
 source("../../half-life/Supriya/ActDBrowser/auxfunctions.R")
 pd.hf.raw <- read.csv(file='../../half-life/Supriya/ActDBrowser/allNormCount.csv',
@@ -266,7 +268,7 @@ p.all <- lapply(p.all,function(x) x + theme_bw()+
                     scale_color_brewer(palette = "Paired") +
                     ylim(0,8.2))
 require(gridExtra)
-pdf(file=paste0(fig_folder,"./subfig3d_actD_eg.pdf"),width = 4)
+pdf(file=paste0(subfig_dir,"./subfig3d_actD_eg.pdf"),width = 4)
 grid.arrange(p.all[[1]],p.all[[2]],p.all[[3]],p.all[[4]],ncol=1)
 dev.off()
 
@@ -274,7 +276,7 @@ p.all <- lapply(p.all,function(x) x + theme(text = element_blank(),
                                             legend.position = "none"))
 
 setEPS()
-postscript(paste0(fig_folder,"./subfig3d_actD_eg.eps"),width = 2.5,height = 5)
+postscript(paste0(subfig_dir,"./subfig3d_actD_eg.eps"),width = 2.5,height = 5)
 grid.arrange(p.all[[1]],p.all[[2]],p.all[[3]],p.all[[4]],ncol=1)
 dev.off()
 # half-life scatter  ------------------------------------------------------
@@ -326,7 +328,7 @@ p4 <- ggplot()+geom_blank(aes(1,1))+
 require(gridExtra)
 g<-grid.arrange(p2, p4, p1, p3, 
              ncol=2, nrow=2, widths=c(4, 1.4), heights=c(1.4, 4))
-ggsave(filename = paste0(fig_folder,'hf-scatter-whole.eps'),width = 6,height = 6,device =cairo_ps,plot = g)
+ggsave(filename = paste0(subfig_dir,'hf-scatter-whole.eps'),width = 6,height = 6,device =cairo_ps,plot = g)
 
 p2 <- p2 + theme(axis.title = element_blank(),axis.text = element_blank())
 p3 <- p3 + theme(axis.title = element_blank(),axis.text = element_blank())
@@ -336,7 +338,7 @@ p1 <- p1 + theme(axis.title = element_blank(),axis.text = element_blank())
 #gid <- kb.genes$X[kb.genes$gene=='Ccl5']
 gid <- kb.genes$X[kb.genes$gene=='Fos']
 #gid <- kb.genes$X[kb.genes$gene=='Il1a']
-setEPS();postscript(file=paste0(fig_folder,'fos-hf.eps'),width = 4,
+setEPS();postscript(file=paste0(subfig_dir,'fos-hf.eps'),width = 4,
                     height = 4)
 x=c(0,.5,1,3,6);y=as.numeric(pd.hf.proc[gid,1:5])
 plot(x, y,pch=16,col=brewer.pal(12,'Paired')[1],xlab='Time(hr)',

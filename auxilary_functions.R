@@ -21,7 +21,7 @@ col.sp <- rev(c(colorRampPalette(c( "#efee00", "azure"))(4),
 col.cytoRNA <- colorRampPalette(c("mediumblue", "white", "firebrick1"))(20)
 col.caRNA <- colorRampPalette(c("#06A199", "white", "#E0036C"))(20) # pink green
 col.caRNA <- colorRampPalette(c("#B4CA03", "white", "#7F378B"))(20) # pink green
-gdic <- read.csv('./data/mRNA.cluster_old.csv',stringsAsFactors = F)
+gdic <- read.csv('../data/mRNA.cluster_old.csv',stringsAsFactors = F)
 rownames(gdic) <- gdic$gene
 
 ccc_fun <- function(x,y){
@@ -163,11 +163,11 @@ plotSimEg<- function(hfs = hf,genotype='wt'){
                                                              axis.text.y=element_blank(),
                                                              axis.title.y=element_blank(),
                                                              legend.position="none") 
-  p.lines <- p.lines  +  scale_colour_manual(values = col.map)
+  p.lines <- p.lines  +  scale_colour_manual(values = col.map.cap)
 }
 plotHMsim <- function(geno='mt',forFig=F) {
   # @geno = 'ctrl' or 'mt'
-  pwd <- ifelse(forFig,'./','../Fig_code/fig.3_hf_hypothesis/')
+  pwd <- ifelse(forFig,'./data/','../fig.3_hf_hypothesis/data/')
   if(geno=='mt')
     load(paste0(pwd,'half-life-sim-mt.Rdata'))
   else
@@ -187,8 +187,8 @@ plotHMsim <- function(geno='mt',forFig=F) {
                  legend.position="none")
   p<- p + geom_hline(yintercept = c(log10(30),2),linetype=2,color='grey60')
   
-  pwd <- ifelse(forFig,'../','../Fig_code/')
-  tf.pd <- readRDS(file = paste0(pwd,'fig.2_knockout/subfig2A.rds'))
+  pwd <- "../"
+  tf.pd <- readRDS(file = paste0(pwd,'fig.2_knockout/data/subfig2A.rds'))
   if(geno=='mt')   tf.pd.new <-rbind(transTFdata(geno = 'mutant',
                                                  tf.df = tf.pd$data, 
                                                  tps = unique(p$data$time)),
@@ -273,6 +273,25 @@ runModel.v1<- function (nfkb_input,pars,times=manytp){
   out<-as.data.frame(out)
 }
 
+runModel<- function (nfkb_input,pars,times=manytp){
+  ## for simulation
+  kb <- pars$k0;kt<-pars$kt;k_deg<-pars$k_deg;kd <- pars$kd;n <- pars$n
+  
+  mRNAini <- c(mRNA= (kb+kt*(nfkb_input$val[1])^n/(kd^n+(nfkb_input$val[1])^n))/k_deg) # init,ss assumption
+  
+  ## subroutine: The model
+  odeModel <- function (Time, State, Pars) {
+    with(as.list(c(State, Pars)),{
+      #nfkb <-approxfun(nfkb_input$time,nfkb_input$val)(Time)
+      nfkb <-pchipfun(nfkb_input$time,nfkb_input$val)(Time)
+      dmRNA    <- kb + kt*nfkb^n/(nfkb^n+kd^n) -k_deg*mRNA
+      return(list(c(dmRNA)))
+    })
+  }
+  
+  out   <- ode(mRNAini, times, odeModel, pars)
+  out<-as.data.frame(out)
+}
 
 
 
@@ -361,7 +380,7 @@ fun.runSim.v2<- function(pars,input.caRNA =pd.ca.exp,caRNA.time=ev$caRNA.time,
 fun.runSim<- function(n=1,hf = c(60,60*2.5),kd=.5,geno='wt'){
   require(parallel)
   
-  dataFolder <- '~/Dropbox/Projects/DurationDecoding-code/Fig_code/data/'
+  dataFolder <- '../data/'
   ifnar_input <- read.csv(file=paste0(dataFolder,'Final_EMSA_ifnar.csv'))
   ifnarikba_input <- read.csv(file=paste0(dataFolder,'Final_EMSA_ifnarikba.csv'))
   
@@ -382,12 +401,13 @@ fun.runSim<- function(n=1,hf = c(60,60*2.5),kd=.5,geno='wt'){
                      k_deg = log(2)/hf)
   
   # run LPS 
-  if(geno=='wt')
+  if(geno=='wt'){
     nfkb <- data.frame(time=ifnar_input$Time,
-                     val =ifnar_input$LPS)
-  else
+                       val =ifnar_input$LPS)
+  }  else{
     nfkb <- data.frame(time=ifnarikba_input$time,
                        val =ifnarikba_input$LPS)
+  }
   
   
   runParallel <- ifelse(length(hf)>1,T,F)
