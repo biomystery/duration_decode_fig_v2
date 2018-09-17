@@ -4,12 +4,15 @@ require(pheatmap)
 require(ggplot2)    
 require(deSolve);require(gplots)
 require(RColorBrewer)
-require(reshape);require(tidyverse); 
+require(reshape);
+require(tidyverse); 
 require(org.Mm.eg.db)
 require(biomaRt)
 require(pracma)
 require(cowplot)
 require(ggpubr)
+
+require(gridExtra)
 require(tidyverse)
 
 col.map.cap <- c(LPS="#f8766d",TNF="#00ba38",IL1="#619cff")
@@ -135,6 +138,20 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 
 # fig3 --------------------------------------------------------------------
+getGdata <- function(gname='Ccl5',cnt =all.normCnt,
+                     fit=all.fit.data,gd=gene.dic){
+  g <- gname; names(g) <- rownames(gd)[which(gd==g)]
+  g <- revert(g)
+  list(normCntlog2 =cnt[g,],
+       g = g,
+       kdeg.fit = subset(fit,ensembleID == g))
+}
+revert <- function(g){
+  tmp <- names(g)
+  names(tmp)<-g
+  tmp
+}
+
 plotActD.gene.log2.gg.key <- function(pd,sel= c('U','TNF','LPS')){
   pd.data <- data.frame(log2normCnt = as.numeric(pd$normCntlog2),
                         coldata)

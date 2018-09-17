@@ -230,15 +230,16 @@ pheatmap(pd.hf.proc[ord,6:11],scale = 'none',
 dev.off()  
 
 plotLegend(cols,bks = bks,fnames = paste0(subfig_dir,'hf-heatmap-cnt-lg.eps'))
-# fig3D-ActD example ------------------------------------------------------
+
+# Fig3D: ActD example ------------------------------------------------------
 source("../../half-life/Supriya/ActDBrowser/auxfunctions.R")
-pd.hf.raw <- read.csv(file='../../half-life/Supriya/ActDBrowser/allNormCount.csv',
+pd.hf.raw <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/allNormCount.csv',
                       stringsAsFactors = F,row.names = 1)
-coldata <- read.csv(file='../../half-life/Supriya/ActDBrowser/coldata.csv',stringsAsFactors = F,row.names = 1)
+coldata <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/coldata.csv',stringsAsFactors = F,row.names = 1)
 pd.hf.raw <- log2(pd.hf.raw+1)
-res.hf.fit <- read.csv(file = "../../half-life/Supriya/ActDBrowser/final.genome.kdeg.csv",
+res.hf.fit <- read.csv(file = "~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/final.genome.kdeg.csv",
                        stringsAsFactors = F)
-gene.dic <- read.csv(file='../../half-life/Supriya/ActDBrowser/gene.dic.csv',
+gene.dic <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/gene.dic.csv',
                      stringsAsFactors = F, row.names = 1)
 # heatmap order ord
 idx <- 1; 
@@ -260,7 +261,7 @@ p.all <- lapply(round(seq(3,176,length.out = 4)),plotActD_eg)
 p.all <- lapply(p.all,function(x) x + theme_bw()+
                     scale_color_brewer(palette = "Paired") +
                     ylim(0,8.2))
-require(gridExtra)
+
 pdf(file=paste0(subfig_dir,"./subfig3d_actD_eg.pdf"),width = 4)
 grid.arrange(p.all[[1]],p.all[[2]],p.all[[3]],p.all[[4]],ncol=1)
 dev.off()
@@ -272,22 +273,20 @@ setEPS()
 postscript(paste0(subfig_dir,"./subfig3d_actD_eg.eps"),width = 2.5,height = 5)
 grid.arrange(p.all[[1]],p.all[[2]],p.all[[3]],p.all[[4]],ncol=1)
 dev.off()
-# half-life scatter  ------------------------------------------------------
+# Fig3E: half-life scatter  ------------------------------------------------------
 # load half-life results 
-pd.hf.all <- read.csv(file='../../half-life/Supriya/ActDBrowser/final.genome.kdeg.csv',stringsAsFactors = F)
-pd.hf.all <- subset(pd.hf.all,ensembleID %in% kb.genes$X)
+pd.hf.all <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/final.genome.kdeg.csv',stringsAsFactors = F)
+pd.hf.all <- subset(pd.hf.all,ensembleID %in% kb.genes$ensembID)
 pd.hf.all <- subset(pd.hf.all,sample %in% c('b1_0.0_U','b2_0.0_U'))
 pd.hf.pair <- pd.hf.all%>% mutate(hf=1/kdeg)%>% dplyr::select(ensembleID,sample,hf) %>% spread(sample,hf)
 pd.hf.pair <-pd.hf.pair[complete.cases(pd.hf.pair[,2:3]),2:3]
-#cor.test(pd.hf.pair$b1_0.0_U,pd.hf.pair$b2_0.0_U)
-
 cor.test(log10(pd.hf.pair$b1_0.0_U*60),log10(pd.hf.pair$b2_0.0_U*60))
-#require(LSD)
 
+#require(LSD)
 #heatpairs(pd.hf.pair)
 #require(GGally)
 #ggpairs(as.data.frame(pd.hf.pair))
-require(dplyr)
+
 
 pd <- pd.hf.all%>% mutate(hf=1/kdeg*60)%>% dplyr::select(ensembleID,sample,hf) %>% spread(sample,hf)
 pd <- pd[complete.cases(pd),]
@@ -296,13 +295,15 @@ p1 <- ggplot(pd,aes(b1_0.0_U,b2_0.0_U)) + geom_point(alpha=0.2,colour='red') +
   ylab('Half-life (mins, rep.2)') + scale_x_log10() + scale_y_log10()  +
   annotate('text',x=20,y=10000,label='cor = 0.85',colour='#3366ff')
 
-p2 <- ggplot(pd%>% select(b1_0.0_U),aes(b1_0.0_U))+ 
-  geom_density() + geom_vline(data = pd%>% select(b1_0.0_U) %>% summarise(median=median(b1_0.0_U)),
+p2 <- ggplot(pd%>%
+               dplyr::select(b1_0.0_U),
+             aes(b1_0.0_U))+ 
+  geom_density() + geom_vline(data = pd%>% dplyr::select(b1_0.0_U) %>% summarise(median=median(b1_0.0_U)),
                               aes(xintercept=median),linetype=2)+
   theme(axis.title.x = element_blank()) + scale_x_log10()#+ coord_trans(x="log10")
 
-p3 <- ggplot(pd%>%select(b2_0.0_U),aes(b2_0.0_U))+ 
-  geom_density()+  geom_vline(data = pd%>% select(b2_0.0_U) %>% summarise(median=median(b2_0.0_U)),
+p3 <- ggplot(pd%>%dplyr::select(b2_0.0_U),aes(b2_0.0_U))+ 
+  geom_density()+  geom_vline(data = pd%>% dplyr::select(b2_0.0_U) %>% summarise(median=median(b2_0.0_U)),
                               aes(xintercept=median),linetype=2)+
   coord_flip() + theme(axis.title.y = element_blank())+ scale_x_log10()
 
@@ -318,7 +319,6 @@ p4 <- ggplot()+geom_blank(aes(1,1))+
         axis.text.y = element_blank(),
         axis.ticks = element_blank())
 
-require(gridExtra)
 g<-grid.arrange(p2, p4, p1, p3, 
              ncol=2, nrow=2, widths=c(4, 1.4), heights=c(1.4, 4))
 ggsave(filename = paste0(subfig_dir,'hf-scatter-whole.eps'),width = 6,height = 6,device =cairo_ps,plot = g)
@@ -326,27 +326,4 @@ ggsave(filename = paste0(subfig_dir,'hf-scatter-whole.eps'),width = 6,height = 6
 p2 <- p2 + theme(axis.title = element_blank(),axis.text = element_blank())
 p3 <- p3 + theme(axis.title = element_blank(),axis.text = element_blank())
 p1 <- p1 + theme(axis.title = element_blank(),axis.text = element_blank())
-
-# plot hf-fit examples 
-#gid <- kb.genes$X[kb.genes$gene=='Ccl5']
-gid <- kb.genes$X[kb.genes$gene=='Fos']
-#gid <- kb.genes$X[kb.genes$gene=='Il1a']
-setEPS();postscript(file=paste0(subfig_dir,'fos-hf.eps'),width = 4,
-                    height = 4)
-x=c(0,.5,1,3,6);y=as.numeric(pd.hf.proc[gid,1:5])
-plot(x, y,pch=16,col=brewer.pal(12,'Paired')[1],xlab='Time(hr)',
-     ylab='Log2(normalised counts)')
-abline(lm(y[1:3]~x[1:3]),
-       col=brewer.pal(12,'Paired')[1])
-x<-c(0,.5,1,2,4,6); y<- as.numeric(pd.hf.proc[gid,6:11])
-points(x, y,pch=16,col=brewer.pal(12,'Paired')[2])
-abline(lm(y[1:3]~x[1:3]),
-       col=brewer.pal(12,'Paired')[2])
-legend(3,0,pch = 16,col=brewer.pal(12,'Paired')[1:2],
-       legend = c('rep1','rep2'))
-dev.off()
-pd.hf.all %>% filter(ensembleID==gid)
-
-
-
 
