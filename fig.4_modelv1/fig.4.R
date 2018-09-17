@@ -1,21 +1,23 @@
 source('../auxilary_functions.R')
-fig_folder <- '~/Dropbox/Projects/DurationDecoding/figure//Fig.4/subfigs/'
+subfig_folder <- '../figures/Fig.4/subfigs/'
 
 
-# Fig4B  - model vs. data hm---------------------------------------------------------
+# Fig4B: Exp hm---------------------------------------------------------
 # see preprocessing
 load('../fig.4_modelv1/data/clustering_cateIII_clean.Rdata')
-rord <- read.csv(file="../fig.2_knockout/gene_cat.csv",stringsAsFactors = F)
+rord <- read.csv(file="../fig.2_knockout/data/mRNA.cat.new.csv",stringsAsFactors = F)
 rord <- rord%>% filter(cate=="III")
 
 
+## exp_hm.eps
 ph.pd<- pd %>%filter(type=='Exp.')%>%
 #ph.pd<- pd %>%filter(type=='Sim.')%>%
   unite(key,geno,type,sti,time) %>%
   spread(key,normCnt.frac)
 rownames(ph.pd)  <- ph.pd$gene; ph.pd$gene<-NULL 
-all(rownames(ph.pd) %in% rord$gene.2)
-rord <- (rord %>% filter(gene.2 %in% rownames(ph.pd)))$gene.2
+all(rownames(ph.pd) %in% rord$gene)
+all(rord$gene%in% rownames(ph.pd) )
+rord <- (rord %>% filter(gene %in% rownames(ph.pd)))$gene
 
 
 bks <- seq(0,1.0001,by = .1)
@@ -26,8 +28,8 @@ cord <- c(15:28,1:14)+2
 ph.pd.sub <-  ph.pd[rord,cord]
 cols <- colorRampPalette(brewer.pal(9,"Reds"))(10)
 
-#postscript(file = paste0(fig_folder,'sim_hm.eps'),
-postscript(file = paste0(fig_folder,'exp_hm.eps'),
+#postscript(file = paste0(subfig_folder,'sim_hm.eps'),
+postscript(file = paste0(subfig_folder,'exp_hm.eps'),
            onefile = F,width = 2.5,height = 5)
 pheatmap(ph.pd.sub,scale = "none",cluster_rows = F,
          cluster_cols = F,show_rownames = F,
@@ -40,15 +42,44 @@ pheatmap(ph.pd.sub,scale = "none",cluster_rows = F,
          gaps_col = c(7,14,21))
 dev.off()
 
+
+# Fig4B: Sim hm---------------------------------------------------------
+
+ph.pd<- pd %>%filter(type=='Sim.')%>%
+  unite(key,geno,type,sti,time) %>%
+  spread(key,normCnt.frac)
+rownames(ph.pd)  <- ph.pd$gene; ph.pd$gene<-NULL 
+
+rord <- read.csv(file="../fig.2_knockout/data/mRNA.cat.new.csv",stringsAsFactors = F)
+rord <- rord%>% filter(cate=="III")
+
+all(rownames(ph.pd) %in% rord$gene)
+all(rord$gene%in% rownames(ph.pd) )
+rord <- (rord %>% filter(gene %in% rownames(ph.pd)))$gene
+
+
+bks <- seq(0,1.0001,by = .1)
+anno_row <- data.frame(v1=as.factor(ph.pd[,'v1']))
+anno_row_color <- list(v1=c('TRUE'='yellow','FALSE'='black'))
+rownames(anno_row) <-  rownames(ph.pd)
+cord <- c(15:28,1:14)+2
+ph.pd.sub <-  ph.pd[rord,cord]
+cols <- colorRampPalette(brewer.pal(9,"Reds"))(10)
+
+postscript(file = paste0(subfig_folder,'sim_hm.eps'),
+           onefile = F,width = 2.5,height = 5)
 pheatmap(ph.pd.sub,scale = "none",cluster_rows = F,
          cluster_cols = F,show_rownames = T,
          color = cols,breaks = bks,
-         fontsize_row = 5,
+         fontsize_row = 5,cellwidth = 4,
          #annotation_row = genes.hf,
-         annotation_colors = anno_row_color,annotation_row = anno_row,
+         annotation_colors = anno_row_color,
+         annotation_row = anno_row,
          legend = F,annotation_names_row = F,
          show_colnames = F,annotation_legend = F,
          gaps_col = c(7,14,21))
+dev.off()
+
 
 if(T){
   fig4.setting <- list(ord= ord,
@@ -61,37 +92,15 @@ if(T){
 }
 
 
-# Fig4F -------------------------------------------------------------------
+# Fig4F: specificity vs. fit -------------------------------------------------------------------
 sp.th <- 2^0.5
 sp.mat <- read.csv(file='../data/mRNA.sp.peak.csv',row.names = 1,stringsAsFactors = F)
 pd <- data.frame(ctrl.sp= sp.mat$b1.LT.ctrl,
                  mt.sp = sp.mat$b1.LT.ko,
                  gene = rownames(sp.mat),
-                 stringsAsFactors = T) 
-pd$gene <- gene.dic[as.character(pd$gene),"gene.2"]
+                 stringsAsFactors = F) 
 pd <- subset(pd,gene %in% rownames(anno_row))
-selc <- rownames(anno_row)[anno_row$v1=="TRUE"]
 
-p<- ggplot(data.frame(ctrl.sp=c(0.5,0.5,8,8,0.5,0.5,8,8,-3,-3,0.5,0.5),
-                      mt.sp=c(0.5/sp.th,8,8,8/sp.th, 
-                              -3,0.5/sp.th,8/sp.th,-3,
-                              -3,8,8,-3),
-                      gp=factor(rep(c(2,3,1),each=4))),
-           aes(ctrl.sp,mt.sp))+   coord_cartesian(xlim=range(pd[,1:2]),ylim=range(pd[,1:2])) +
-  geom_polygon(aes(fill=gp)) + scale_fill_manual(values = alpha(c("blue"), c(.05,.1,.2)))+
-  theme_bw()+
-  geom_abline(slope = 1,intercept = 0,colour=grey(.8)) +
-  geom_abline(slope = 1/sp.th,intercept = 0,colour="blue",linetype=2) +
-  geom_hline(yintercept = c(-.5,.5),colour=grey(.8),linetype=2)+
-  geom_vline(xintercept = c(-.5,.5),colour=grey(.8),linetype=2) +
-  geom_point(data = pd,aes(ctrl.sp,mt.sp),size=2,shape=21,fill="grey70",colour="black") + 
-  annotate('point',x=pd[pd$gene%in%selc,1],y=pd[pd$gene%in%selc,2],fill='yellow',colour="black",size=2,shape=21)+ theme(legend.position = 'none')+
- coord_cartesian(xlim=c(0.5,5),ylim=c(-1,4))
-ggsave(file=paste0(fig_folder,'subfig4f_w_ticks.eps'),plot = p,width = 2.5,height = 2.5,device=cairo_ps)
-p +  theme(legend.position = 'none',axis.title.x = element_blank(),axis.title.y = element_blank(),
-        axis.text.x = element_blank(),axis.text.y = element_blank())
-
-ggsave(file=paste0(fig_folder,'subfig4f.eps'),width = 2.5,height = 2.5,device=cairo_ps)
 
 # explore
 pd <- pd %>% mutate(V1 = anno_row[gene,])
@@ -100,19 +109,16 @@ p<- ggboxplot(pd,x="V1",y="dynamics_dependence",color="V1",palette = c("black","
           ylab = "Dynamics dependence",add="jitter") 
 p+stat_compare_means(method.args = list(alternative="less"),method="t.test",label.y = 4.5) +theme_bw()+ 
   theme(legend.position = "none",strip.background  = element_rect(fill="grey100" ))
-ggsave(file=paste0(fig_folder,'subfig4f_explore.eps'),width = 2,height = 4,device=cairo_ps)
 
-# explore 2
 pd.2 <- pd%>% gather(key="Geno",value = "sp",1:2)
 
-#  unite("Geno_Fit",c("Geno","isFit"),remove = F)
 p.2<- ggboxplot(pd.2,x="V1",y="sp",color="V1",palette = c("black","#E7B800"),
                 add="jitter",facet.by = "Geno")
 p.2+theme_bw()+stat_compare_means(method.args = list(alternative="greater"),method = "t.test",label.y = 5)+
   theme(legend.position = "none",strip.background  = element_rect(fill="grey96" ))
-ggsave(file=paste0(fig_folder,'subfig4f_explore2.eps'),width = 4.2,height = 4,device=cairo_ps)
+ggsave(file=paste0(subfig_folder,'subfig4f_explore2.eps'),width = 4.2,height = 4,device=cairo_ps)
 
-# Fig4C examples- model vs. data -------------------------------------------------------
+# Fig4C: examples- model vs. data -------------------------------------------------------
 eg.genes <- c('Rel',"Nfkb1","Ccl1","Ccl2","Gsap",'Rab15','Mmp3')
 maxScale.mRNA <- plotExp(dtype = 'mRNA',scale = "geno",savetofile = F)
 maxScale.mRNA$cond <- NULL 
@@ -126,17 +132,14 @@ tmp.simData <- read.csv(file = "./models/mRNA-Fit-avg-sp-v1e/bestFit.tc.csv",str
 colnames(tmp.simData) <- sub('mRNA','normCnt.frac',colnames(tmp.simData)) 
 v1.simData <- (rbind(v1.simData,tmp.simData))
 
-# 
 
-# 
-col.map <- c(lps="#f8766d",tnf="#00ba38",il1="#619cff")
 p <- plotEgFit(eg.genes = eg.genes,wide = F)
 p<- p + theme_bw() + theme(legend.position = "none",strip.text.x = element_blank())
 p + theme(text = element_blank())
-ggsave(filename = paste0(fig_folder,'v1_eg_anno.eps'),width = 2,height = 6)
-ggsave(filename = paste0(fig_folder,'v1_eg.eps'),width = 2,height = 6)
+ggsave(filename = paste0(subfig_folder,'v1_eg_anno.eps'),width = 2,height = 6)
+ggsave(filename = paste0(subfig_folder,'v1_eg.eps'),width = 2,height = 6)
 
-# Fig4D plot perturb -------------------------------------------------------------
+# Fig4D: plot perturb -------------------------------------------------------------
 # subset the genes passed fitting 
 pd.tmp <- ph.pd[ord,]; 
 target.genes <- rownames(pd.tmp)[pd.tmp$v1]; rm(pd.tmp)
@@ -184,10 +187,10 @@ if(T){
                     ylim = c(-0.2,2.6)) 
   
 }
-ggsave(filename = paste0(fig_folder,"feature_plot_down.pdf"),width = 4.43,height = 1.63,scale = 1.5)
-ggsave(filename = paste0(fig_folder,"subfig4e_perturb.eps"),width = 7,height = 4)
+ggsave(filename = paste0(subfig_folder,"feature_plot_down.pdf"),width = 4.43,height = 1.63,scale = 1.5)
+ggsave(filename = paste0(subfig_folder,"subfig4e_perturb.eps"),width = 7,height = 4)
 
-# test Fig4D --------------------------------------------------------------
+#Fig4E: examples  --------------------------------------------------------------
 test <- readRDS('~/Dropbox/Projects/DurationDecoding-code/notebooks/kdeg_15m_tc_test.Rdata')
 
 pd.tc <- test %>% 
@@ -231,7 +234,7 @@ pd.tc.2$gene <- factor(pd.tc.2$gene,levels = eg.genes)
 ggplot(pd.tc.2,aes(time,normCnt.frac,colour=sti,linetype=geno)) + geom_line() + 
   facet_grid(gene~type)+ scale_color_manual(values = col.map) + theme_bw()+ 
   theme(legend.position = "none")
-ggsave(filename = paste(fig_folder," subfig4f_tc.eps"),height = 7,width = 4)
+ggsave(filename = paste(subfig_folder," subfig4f_tc.eps"),height = 7,width = 4)
 
 # add v2 (caRNA) ----------------------------------------------------------
 v2 <- read.csv(file='../fig.5_caRNA/caRNAFit-avg-sp-v6b/caRNAFit-avg-sp-funs-v6-r2.csv',

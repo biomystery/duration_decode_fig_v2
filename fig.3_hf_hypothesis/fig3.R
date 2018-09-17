@@ -326,4 +326,3 @@ ggsave(filename = paste0(subfig_dir,'hf-scatter-whole.eps'),width = 6,height = 6
 p2 <- p2 + theme(axis.title = element_blank(),axis.text = element_blank())
 p3 <- p3 + theme(axis.title = element_blank(),axis.text = element_blank())
 p1 <- p1 + theme(axis.title = element_blank(),axis.text = element_blank())
-
