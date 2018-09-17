@@ -42,9 +42,9 @@ sum.sim1 <- figs.ctrl$p$data %>%
   group_by(hf,stimuli) %>%
   summarise(peak=max(value),mean=mean(value)) %>% 
   group_by(hf) %>%
-  summarise(ratio.peak=first(peak)/last(peak),
-            ratio.mean=first(mean)/last(mean)) %>%
-    gather(ratio_type,ratio,-hf)
+  summarise(ratio.peak=dplyr::first(peak)/dplyr::last(peak),
+            ratio.mean=dplyr::first(mean)/dplyr::last(mean)) %>%
+  gather(ratio_type,ratio,-hf)
 
 
 bks<-c(0,.5,1,2,3)
@@ -159,11 +159,14 @@ ggsave(filename = paste0(subfig_dir,'subfig3c_2.eps'),width = 3,height = 3)
 
 
 # Fig3D: ActD-seq heatmaps  -----------------------------------------------
-# read the half-life data 
+# read the half-life count data 
 pd.hf.raw <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/allNormCount.csv',
                       stringsAsFactors = F)
-kb.genes <- read.csv(file='../data/mRNA.cluster.csv',stringsAsFactors = F)
-pd.hf.raw <- subset(pd.hf.raw, X %in% kb.genes$X)
+kb.genes <- read.csv(file='../fig.2_knockout/data/mRNA.cat.new.csv',
+                     stringsAsFactors = F,row.names = 1)
+rownames(kb.genes) <-kb.genes$ensembID
+all(kb.genes$ensembID %in% pd.hf.raw$X)
+pd.hf.raw <- subset(pd.hf.raw, X %in% kb.genes$ensembID)
 rownames(pd.hf.raw) <- pd.hf.raw$X; pd.hf.raw$X <- NULL 
 pd.hf.raw <- pd.hf.raw[,grep('_U_',colnames(pd.hf.raw))]
 pd.hf.proc <- log2(pd.hf.raw+1)
@@ -175,6 +178,16 @@ names(ord) <- rownames(pd.hf.proc)[ord]
 pheatmap(pd.hf.proc[ord,],scale = 'none',
          cluster_cols = F,show_rownames = F,
          cluster_rows = F,gaps_col = 5)
+
+# load half-life results 
+pd.hf.all <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/final.genome.kdeg.csv',stringsAsFactors = F)
+pd.hf.all <- subset(pd.hf.all,ensembleID %in% kb.genes$ensembID)
+pd.hf.all <- subset(pd.hf.all,sample %in% c('b1_0.0_U','b2_0.0_U'))
+pd.hf.pair <- pd.hf.all%>% mutate(hf=1/kdeg)%>% dplyr::select(ensembleID,sample,hf) %>% spread(sample,hf)
+pd.hf.pair <-pd.hf.pair[complete.cases(pd.hf.pair[,2:3]),2:3]
+#cor.test(pd.hf.pair$b1_0.0_U,pd.hf.pair$b2_0.0_U)
+
+
 pd.hf.pair.anno <- pd.hf.all%>% mutate(hf=1/kdeg)%>% dplyr::select(ensembleID,sample,hf) %>% spread(sample,hf)
 mis <- setdiff(rownames(pd.hf.proc),pd.hf.pair.anno$ensembleID)
 pd.hf.pair.anno <- rbind(pd.hf.pair.anno,
