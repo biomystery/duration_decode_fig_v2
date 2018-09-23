@@ -5,6 +5,7 @@ all(v1e.res$X %in% gene.dic$gene)
 v1e.res$gene <- gene.dic[v1e.res$X,"gene.2"] 
 v1e.res <- (subset(v1e.res,gene %in% unique(ev$pd$gene)))
 write.csv(file = "table_bestFitPar.csv",v1e.res)
+
 head(dic.v1)
 head(v1e.res)
 rownames(v1e.res) <- v1e.res$gene
@@ -15,8 +16,6 @@ ev$pd %>% filter(type=="Sim.") %>% group_by(gene)%>%
   summarise(r=max(normCnt.frac)-min(normCnt.frac))
 
 # old ---------------------------------------------------------------------
-
-
 # preprocessing 
 ev <- new.env();load('./data/clustering_cateIII_clean.Rdata',ev)
 ls(ev)
@@ -31,33 +30,31 @@ v1.simData <- rbind(v1.simData,v1.simData.new) ; rm(v1.simData.new)
 
 # subset simlutation same time points as experiments 
 v1.simData.sub <- subset(v1.simData,time %in% unique(ev$pd$time))
+v1.simData.sub$gene <- gdic[v1.simData.sub$gene,'gene.2']
 sum(unique(ev$pd$gene) %in% unique(v1.simData.sub$gene))
-v1.simData.sub$gene <- gene.dic[v1.simData.sub$gene,'gene.2']
 
 pd <- rbind(cbind(subset(v1.simData.sub,gene %in% unique(ev$pd$gene)),
                   type='Sim.'),
             cbind(ev$pd[,colnames(v1.simData.sub)],
                   type='Exp.'))
 
-#dictionary for the cluster info
-dic.clust <- unique.data.frame(ev$pd %>% dplyr::select(gene,clust))
-rownames(dic.clust)<- dic.clust$gene
-pd <- pd%>%mutate(clust=dic.clust[gene,'clust'])
-write.csv(file="table_goodgene.csv",gene.dic[unique(pd$gene[pd$v1]),])
 
 # dictionary for v1 fitting results
 load('../fig.4_modelv1/data/clustering_cateIII_clean.Rdata') #new
 
+gdic.2 <- gdic; rownames(gdic.2) <- gdic$gene.2
+model.pars <- ev$pd %>% group_by(gene)%>% 
+  tidyr::spread(type,normCnt.frac) %>%mutate(res=Sim.-Exp.)%>%
+  dplyr::summarise(nrmsd=sqrt(sum(res^2)/length(res))/(max(Exp.)-min(Exp.)),
+                   rmsd=sqrt(sum(res^2)/length(res)))%>%
+  mutate(ensembl=gdic.2[gene,"gene_id"])
+
+model.pars<- dic.v1 %>% left_join(model.pars[,-3],by = "gene")
+write_csv(path = "./table_model.csv",x = model.pars)
 
 
-pd %>% group_by(gene)%>% 
-  tidyr::spread(type,normCnt.frac) %>%mutate(res=Sim.-Exp.)
-  dplyr::summarise(nrmsd=sqrt(sum(res^2)/length(res))/(max(Exp.)-min(Exp.)))
-dic.v1<-as.data.frame(dic.v1)
-rownames(dic.v1) <- dic.v1$gene
-pd <- pd%>%mutate(v1=dic.v1[gene,"nrmsd"]<=0.13)
-gene.dic <- read.csv(file='../data/mRNA.cluster_old.csv',stringsAsFactors = F)
-write.csv(file="./table_model.csv",dic.v1)
+### (TODO)
+write.csv(file="table_goodgene.csv",gene.dic[unique(pd$gene[pd$v1]),])
 
 # export data s
 tmp.var <- read.csv(file = './mRNA-Fit-avg-sp-v1e/result.csv',stringsAsFactors = F,
@@ -70,7 +67,6 @@ rownames(tmp.var) <- gene.dic[rownames(tmp.var),]$gene.2
 
 write.csv(subset(gene.dic,gene.2%in% glist.v1.left),file='glist.v1.left.csv')
 write.csv(tmp.var[unique(pd$gene[pd$v1]),],file='v1_model_good_genes.csv') 
-
 
 
 

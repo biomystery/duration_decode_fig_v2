@@ -80,13 +80,6 @@ res.2 <- do.call(rbind,res)
 saveRDS(file = 'kdeg_15m_new.Rdata',res.2)
 
 
-res<- mclapply(genes.new,FUN = function(g) runV1perturb(eg.genes = g,
-                                                    pnew = log(2)/(24*60)),mc.cores = 14)
-res.2 <- do.call(rbind,res)
-saveRDS(file = 'kdeg_24hr.Rdata',res.2)
-
-
-
 
 # loop for tc data  -------------------------------------------------------
 egs  <- c("Ccl5", "Gsap", "Rab15", "Mmp3", "Sod2", "Il1rl1") 
