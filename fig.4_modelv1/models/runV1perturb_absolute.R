@@ -1,8 +1,6 @@
 
 
 # init --------------------------------------------------------------------
-
-
 # loading packages. 
 source('../auxilary_functions.R')
 
@@ -18,7 +16,7 @@ v1.simData <- (rbind(v1.simData,tmp.simData))
 # load input 
 load(file = './models/mRNA-Fit-avg-sp-v1d/mRNA-Fit-avg-sp-v1c-pre.Rdata')
 
-# load parmeters 
+# load parmeters  
 model.par <- read.csv(file='./models//mRNA-Fit-avg-sp-v1d/result.csv',stringsAsFactors = F,row.names = 1)
 model.par <- read.csv(file='./table_model.csv',stringsAsFactors = F,row.names = 1)
 gene.dic <- read.csv(file = "../data/mRNA.cluster_old.csv",stringsAsFactors = F,row.names = 2)

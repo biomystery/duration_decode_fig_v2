@@ -105,11 +105,6 @@ pd <- subset(pd,gene %in% rownames(anno_row))
 # explore
 pd <- pd %>% mutate(V1 = anno_row[gene,])
 pd <- pd %>% mutate(dynamics_dependence = ctrl.sp-mt.sp)
-p<- ggboxplot(pd,x="V1",y="dynamics_dependence",color="V1",palette = c("black","#E7B800"),
-          ylab = "Dynamics dependence",add="jitter") 
-p+stat_compare_means(method.args = list(alternative="less"),method="t.test",label.y = 4.5) +theme_bw()+ 
-  theme(legend.position = "none",strip.background  = element_rect(fill="grey100" ))
-
 pd.2 <- pd%>% gather(key="Geno",value = "sp",1:2)
 
 p.2<- ggboxplot(pd.2,x="V1",y="sp",color="V1",palette = c("black","#E7B800"),
@@ -122,11 +117,9 @@ ggsave(file=paste0(subfig_folder,'subfig4f_explore2.eps'),width = 4.2,height = 4
 eg.genes <- c('Rel',"Nfkb1","Ccl1","Ccl2","Gsap",'Rab15','Mmp3')
 maxScale.mRNA <- plotExp(dtype = 'mRNA',scale = "geno",savetofile = F)
 maxScale.mRNA$cond <- NULL 
-
 v1.simData <- read.csv(file='./models/mRNA-Fit-avg-sp-v1d/bestFit.tc.csv',
                        stringsAsFactors = F)
 names(v1.simData) <- sub("mRNA","normCnt.frac",names(v1.simData)) 
-v1.simData$gene <- gene.dic[v1.simData$gene,'gene.2']
 
 tmp.simData <- read.csv(file = "./models/mRNA-Fit-avg-sp-v1e/bestFit.tc.csv",stringsAsFactors = F)
 colnames(tmp.simData) <- sub('mRNA','normCnt.frac',colnames(tmp.simData)) 
@@ -141,7 +134,7 @@ ggsave(filename = paste0(subfig_folder,'v1_eg.eps'),width = 2,height = 6)
 
 # Fig4D: plot perturb -------------------------------------------------------------
 # subset the genes passed fitting 
-pd.tmp <- ph.pd[ord,]; 
+pd.tmp <- ph.pd[rord,]; 
 target.genes <- rownames(pd.tmp)[pd.tmp$v1]; rm(pd.tmp)
 
 # loading simulatino data 
@@ -153,8 +146,8 @@ pd.p$type <- sub("k_deg","k_deg_up",pd.p$type) # rename
 pd.p$gene <- as.character(pd.p$gene) 
 
 # change name from ENSEM.. to gene symbol 
-all(unique(pd.p$gene)%in% rownames(gene.dic))
-pd.p$gene <- gene.dic[pd.p$gene,"gene.2"]
+all(unique(pd.p$gene)%in% rownames(gdic))
+pd.p$gene <- gdic[pd.p$gene,"gene.2"]
 all( target.genes%in% pd.p$gene)
 
 # plot
