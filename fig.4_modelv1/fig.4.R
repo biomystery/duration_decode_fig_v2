@@ -138,16 +138,13 @@ pd.tmp <- ph.pd[rord,];
 target.genes <- rownames(pd.tmp)[pd.tmp$v1]; rm(pd.tmp)
 
 # loading simulatino data 
-envs <- new.env()
-pd.p <- readRDS('~/Dropbox/Projects/DurationDecoding-code/notebooks/kdeg_15m_new.Rdata')
+pd.p <- readRDS('./data/kdeg_15m_new.Rdata')
 
 pd.p <- (pd.p %>% filter(type!='Exp.')) #exclude exp. data 
 pd.p$type <- sub("k_deg","k_deg_up",pd.p$type) # rename 
 pd.p$gene <- as.character(pd.p$gene) 
 
 # change name from ENSEM.. to gene symbol 
-all(unique(pd.p$gene)%in% rownames(gdic))
-pd.p$gene <- gdic[pd.p$gene,"gene.2"]
 all( target.genes%in% pd.p$gene)
 
 # plot
@@ -158,10 +155,10 @@ if(T){
   pd.p$gene <- factor(pd.p$gene,levels = target.genes)
   
   pd.p <- pd.p %>%arrange(gene,type,geno)
-  ggplot(pd.p,
-         aes(ifelse(type=="Sim.norm",as.numeric(gene)+eps,
-                    as.numeric(gene)-eps),
-             LvT.sp,group=interaction(gene,type))) +
+  p<- ggplot(pd.p,
+         aes(LvT.sp,ifelse(type=="Sim.norm",as.numeric(gene)-eps,
+                    as.numeric(gene)+eps),
+             group=interaction(gene,type))) +
     #coord_flip(xlim = c(0,length(unique(pd$gene))+1),expand = F)+
     geom_point(aes(shape=geno,colour=type))+
     geom_line(aes(colour=type))+
@@ -180,8 +177,9 @@ if(T){
                     ylim = c(-0.2,2.6)) 
   
 }
-ggsave(filename = paste0(subfig_folder,"feature_plot_down.pdf"),width = 4.43,height = 1.63,scale = 1.5)
-ggsave(filename = paste0(subfig_folder,"subfig4e_perturb.eps"),width = 7,height = 4)
+ggsave(filename = paste0(subfig_folder,"subfig4e_perturb.eps"),
+       width = 7,height = 4,
+       p + theme(legend.position = "none")+ylab(""))
 
 #Fig4E: examples  --------------------------------------------------------------
 test <- readRDS('~/Dropbox/Projects/DurationDecoding-code/notebooks/kdeg_15m_tc_test.Rdata')
@@ -211,36 +209,27 @@ pd.tc.2 %>%
 
 
 # Fig4E perturb plot with lines  ------------------------------------------------
-eg.genes <- c("Rab15","Sod2","Ccl5", "Gsap",  "Mmp3",  "Il1rl1") 
-#eg.genes <- c("Slc6a12", "Gsap", "Cd274", "Exoc3l4") 
-#eg.genes  <- c("Bcl3", "Ccl7", "Tmem132e", "Slco3a1","Mmp9") 
-pd.tc <- readRDS(file = "~/Dropbox/Projects/DurationDecoding-code/notebooks/kdeg_15m_tc.Rdata")
-#pd.tc <- readRDS(file = "../../notebooks/kdeg_15m_tc_test.Rdata")
-pd.tc <- pd.tc %>% 
-  mutate(time=ifelse(type=="Sim.norm",time,time/60))
-pd.tc$type <- factor(pd.tc$type,levels = c("Sim.norm","k_deg"))
-pd.tc.2 <- pd.tc %>% 
-  group_by(gene,geno,type) %>% 
-  dplyr::mutate(normCnt.frac=normCnt.frac/max(normCnt.frac))
+if(T){
+  eg.genes  <- c("Bcl3", "Ccl7", "Rab15", "Mmp3") 
+  pd.tc <- readRDS(file = "./data/kdeg_15m_tc.Rdata")
+  
+  pd.tc <- pd.tc %>% 
+    mutate(time=ifelse(type=="Sim.norm",time,time/60))
+  pd.tc$type <- factor(pd.tc$type,levels = c("Sim.norm","k_deg"))
+  pd.tc.2 <- pd.tc %>% 
+    filter(gene %in% eg.genes)%>%
+    group_by(gene,geno,type) %>% 
+    dplyr::mutate(normCnt.frac=normCnt.frac/max(normCnt.frac))
+  
+  pd.tc.2$gene <- factor(pd.tc.2$gene,levels = eg.genes)
+  p<-ggplot(pd.tc.2,aes(time,normCnt.frac,colour=sti,linetype=geno)) + geom_line() + 
+    facet_grid(gene~type)+ scale_color_manual(values = col.map) + theme_bw()+ 
+    theme(legend.position = "none")
+}
 
-pd.tc.2$gene <- factor(pd.tc.2$gene,levels = eg.genes)
-ggplot(pd.tc.2,aes(time,normCnt.frac,colour=sti,linetype=geno)) + geom_line() + 
-  facet_grid(gene~type)+ scale_color_manual(values = col.map) + theme_bw()+ 
-  theme(legend.position = "none")
-ggsave(filename = paste(subfig_folder," subfig4f_tc.eps"),height = 7,width = 4)
+ggsave(filename = paste(subfig_folder," subfig4e_tc.eps"),height = 4,width = 2.6,
+       p + theme(strip.text = element_blank(),text = element_blank()))
 
-# add v2 (caRNA) ----------------------------------------------------------
-v2 <- read.csv(file='../fig.5_caRNA/caRNAFit-avg-sp-v6b/caRNAFit-avg-sp-funs-v6-r2.csv',
-         stringsAsFactors = F,row.names = 1)
-v2$gene[grep('ENSMU',v2$gene)] <- dic.gene[v2$gene[grep('ENSMU',v2$gene)]]
-rownames(v2) <- v2$gene
-dic.v2 <- v2[dic.v1$gene,]
-dic.v12 <- data.frame(v1=dic.v1$nrmsd,
-                      v2=dic.v2$nrmsd)
-dic.v12.fit <- dic.v12<=0.13
-venn(list(v1=which(dic.v12.fit[,1]),
-          v2=which(dic.v12.fit[,2])))
 
-pd <- pd%>% mutate(v2=v2[gene,'nrmsd']<=0.13)
 
 

@@ -1,5 +1,3 @@
-
-
 # init --------------------------------------------------------------------
 # loading packages. 
 source('../auxilary_functions.R')
@@ -7,20 +5,26 @@ source('../auxilary_functions.R')
 maxScale.mRNA <- plotExp(dtype = 'mRNA',scale = "geno",savetofile = F)
 maxScale.mRNA$cond <- NULL 
 
+
 v1.simData <- read.csv(file='./models/mRNA-Fit-avg-sp-v1d/bestFit.tc.csv',
                        stringsAsFactors = F)
 names(v1.simData) <- sub("mRNA","normCnt.frac",names(v1.simData)) 
 tmp.simData <- read.csv(file = "./models/mRNA-Fit-avg-sp-v1e/bestFit.tc.csv",stringsAsFactors = F)
 colnames(tmp.simData) <- sub('mRNA','normCnt.frac',colnames(tmp.simData)) 
 v1.simData <- (rbind(v1.simData,tmp.simData))
+v1.simData$gene<- gdic[v1.simData$gene,"gene.2"]
+maxScale.mRNA$gene <- gdic[maxScale.mRNA$gene,"gene.2"]
+
 # load input 
-load(file = './models/mRNA-Fit-avg-sp-v1d/mRNA-Fit-avg-sp-v1c-pre.Rdata')
+ev <- new.env()
+load(file = './models/mRNA-Fit-avg-sp-v1d/mRNA-Fit-avg-sp-v1c-pre.Rdata',ev)
+input.emsa.ifnar <- ev$input.emsa.ifnar
+input.emsa.ifnarikba <- ev$input.emsa.ifnarikba
 
 # load parmeters  
-model.par <- read.csv(file='./models//mRNA-Fit-avg-sp-v1d/result.csv',stringsAsFactors = F,row.names = 1)
-model.par <- read.csv(file='./table_model.csv',stringsAsFactors = F,row.names = 1)
-gene.dic <- read.csv(file = "../data/mRNA.cluster_old.csv",stringsAsFactors = F,row.names = 2)
-model.par$gene.2 <- gene.dic[model.par$ensembleID,"gene"]
+model.par <- read_csv(file='./table_model.csv')%>%
+  as.data.frame()%>%
+  column_to_rownames("gene")
 
 
 # function 
@@ -42,7 +46,7 @@ runV1perturb<- function(eg.genes='Ccl7',checkNorm = F, s= "k_deg",pnew=log(2)/15
   
   
   # load single gene parameters 
-  pars <- model.par[eg.genes,5:10]
+  pars <- model.par[eg.genes,2:7]
   
   # re-run the model 
   if(checkNorm){
@@ -69,22 +73,29 @@ runV1perturb<- function(eg.genes='Ccl7',checkNorm = F, s= "k_deg",pnew=log(2)/15
 
 # main loop ---------------------------------------------------------------
 require(parallel)
-pd.sp.perturb <- readRDS('~/Dropbox/Projects/DurationDecoding-code/notebooks/kdeg_15m.Rdata')
-old.genes <- unique(as.character(pd.sp.perturb$gene))
-genes <- model.par$gene.2
-venn(list(old.genes,genes))
-genes.new <- genes[!genes%in% old.genes]
-res<- mclapply(genes,FUN = function(g) runV1perturb(eg.genes = g,
-                                              pnew=log(2)/15),mc.cores = 7)
-res.2 <- do.call(rbind,res)
-saveRDS(file = 'kdeg_15m_new.Rdata',res.2)
+
+genes<- (model.par%>%
+                   rownames_to_column("gene")%>%
+  filter(nrmsd<0.13))$gene
+
+i<-1
+res<- lapply(genes,
+             FUN = function(g) {
+               print(i)
+               runV1perturb(eg.genes = g,pnew=log(2)/15) 
+               i <<- i+1
+             })
+
+res<- mclapply(genes,
+               FUN = function(g) runV1perturb(eg.genes = g,
+  pnew=log(2)/15),mc.cores = 6)
+res <- do.call(rbind,res)
+saveRDS(file = 'kdeg_15m_new.Rdata',res)
 
 
 
 # loop for tc data  -------------------------------------------------------
-egs  <- c("Ccl5", "Gsap", "Rab15", "Mmp3", "Sod2", "Il1rl1") 
-egs  <- c("Slc6a12", "Gsap", "Cd274", "Exoc3l4") 
-egs  <- c("Bcl3", "Ccl7", "Tmem132e", "Slco3a1","Mmp9") 
+
 runV1perturb_tc<- function(eg.genes='Ccl7',checkNorm = F, s= "k_deg",pnew=log(2)/15){
   
   p <- plotEgFit(eg.genes = eg.genes)
@@ -94,7 +105,7 @@ runV1perturb_tc<- function(eg.genes='Ccl7',checkNorm = F, s= "k_deg",pnew=log(2)
   a$type <- 'Sim.norm'
   
   # load single gene parameters 
-  pars <- model.par[eg.genes,5:10]
+  pars <- model.par[eg.genes,2:7]
   
   # re-run the model 
   if(checkNorm){
@@ -118,7 +129,8 @@ runV1perturb_tc<- function(eg.genes='Ccl7',checkNorm = F, s= "k_deg",pnew=log(2)
 }
 
 
-res<- mclapply(egs,FUN = function(g) runV1perturb_tc(eg.genes = g,
-                                                    pnew=log(2)/15),mc.cores = length(egs))
+res<- mclapply(genes,
+               FUN = function(g) runV1perturb_tc(eg.genes = g,
+               pnew=log(2)/15),mc.cores = 6)
 res.2 <- do.call(rbind,res)
-saveRDS(file = 'kdeg_15m_tc_test.Rdata',res.2)
+saveRDS(file = './data/kdeg_15m_tc.Rdata',res.2)

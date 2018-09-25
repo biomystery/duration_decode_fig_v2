@@ -271,24 +271,26 @@ plotExp <- function(dtype="caRNA",savetofile=T,scale='none',show_fig=F){
 }
 
 runModel.v1<- function (nfkb_input,pars,times=manytp){
+  k0 <- pars$kb;kt<-pars$kt;k_deg<-pars$k_deg;
+  kd <- pars$Kd;tau <- pars$tau;N <- pars$n
   
-  kb <- pars$kb;kt<-pars$kt;k_deg<-pars$k_deg;kd <- pars$Kd;n <- pars$n
-  
-  mRNAini <- c(mRNA= (kb+kt*(nfkb_input$val[1])^n/(kd^n+(nfkb_input$val[1])^n))/k_deg) # init,ss assumption
+  mRNAini <- c(mRNA= (kt*nfkb_input$val[1]^N/(kd^N+nfkb_input$val[1]^N)+k0)/k_deg) # init,ss assumption
   
   ## subroutine: The model
   odeModel <- function (Time, State, Pars) {
     with(as.list(c(State, Pars)),{
-      #nfkb <-approxfun(nfkb_input$time,nfkb_input$val)(Time)
-      nfkb <-pchipfun(nfkb_input$time,nfkb_input$val)(Time)
-      dmRNA    <- kb + kt*nfkb^n/(nfkb^n+kd^n) -k_deg*mRNA
+      nfkb <-ifelse(Time<= tau,nfkb_input$val[1],pchipfun(nfkb_input$time,nfkb_input$val)(Time-tau))
+      dmRNA    <- kt*nfkb^N/(kd^N+nfkb^N)+k0-k_deg*mRNA
       return(list(c(dmRNA)))
     })
   }
   
   out   <- ode(mRNAini, times, odeModel, pars)
   out<-as.data.frame(out)
+  out$mRNA[nrow(out)] <- out$mRNA[nrow(out)-1]
+  out
 }
+
 
 runModel<- function (nfkb_input,pars,times=manytp){
   ## for simulation
@@ -563,6 +565,7 @@ plotAllEgFit <- function(i){
 
 plotEgFit <- function(eg.genes,isFinal=F,use_facet=T,simData=v1.simData,
                       expData=maxScale.mRNA,wide=F){
+  
   pd <- rbind(cbind(subset(simData,gene %in% eg.genes),type='Sim.'),
               cbind(subset(expData,gene %in% eg.genes)[,colnames(simData)],type='Exp.'))
   #pd$sti <- toupper(pd$sti);
