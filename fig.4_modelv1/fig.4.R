@@ -166,20 +166,20 @@ if(T){
     #          length = unit(.1,"inches")))  +
     scale_color_manual(name="half-life",values = cols[-1],labels=c("15m","norm."))+
     scale_shape_manual(values = c(16,1))+
-    scale_x_continuous(breaks = 1:length(unique(pd.p$gene)),
+    scale_y_continuous(breaks = 1:length(unique(pd.p$gene)),
                        labels = unique(pd.p$gene))+ 
-    theme_bw()+theme(panel.grid.major.x = element_blank(),
-                     panel.grid.minor.x = element_line(size = .5),
-                     axis.text.x =element_text(angle = 90,hjust = 1,vjust = 0.5),
-                     axis.title.x = element_blank())+
-    geom_hline(yintercept = .5,linetype=2,colour="blue")+
-    coord_cartesian(xlim = c(0,length(unique(pd.p$gene))+1),expand = F,
-                    ylim = c(-0.2,2.6)) 
+    theme_bw()+theme(panel.grid.major.y = element_blank(),
+                     panel.grid.minor.y = element_line(size = .5),
+                     #axis.text.y =element_text(angle = 90,hjust = 1,vjust = 0.5),
+                     axis.title.y = element_blank())+
+    geom_vline(xintercept = .5,linetype=2,colour="blue")+
+    coord_cartesian(ylim = c(0,length(unique(pd.p$gene))+1),expand = F,
+                    xlim = c(-0.2,2.6)) 
   
 }
 ggsave(filename = paste0(subfig_folder,"subfig4e_perturb.eps"),
-       width = 7,height = 4,
-       p + theme(legend.position = "none")+ylab(""))
+       width = 4.5,height = 7,scale = .75,
+       p + theme(legend.position = "none")+xlab(""))
 
 #Fig4E: examples  --------------------------------------------------------------
 test <- readRDS('~/Dropbox/Projects/DurationDecoding-code/notebooks/kdeg_15m_tc_test.Rdata')
