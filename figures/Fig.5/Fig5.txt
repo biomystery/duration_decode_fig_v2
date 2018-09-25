@@ -1,0 +1,7 @@
+
+Figure 5
+
+Specificity can already happens at caRNA level. A. Heatmap to compare gene expression at cytoRNA (mature-mRNA) and caRNA (pre-mRNA) level. B. Scatter of genes’ expression specificity at caRNA (blue dots) and cytoRNA (red dots) levels. Lines are used to marker the two levels are belong to same genes. Black lines highlighted three example genes: Fpr1, Can and Ccl5. The relative expression levels are shown in the right panels. 
+
+
+	

@@ -22,8 +22,10 @@ col.sp <- rev(c(colorRampPalette(c( "#efee00", "azure"))(4),
               colorRampPalette(c( "azure", "#1080a3"))(4)))
 
 col.cytoRNA <- colorRampPalette(c("mediumblue", "white", "firebrick1"))(20)
+col.cytoRNA <- brewer.pal(n = 9,name = 'Set1')[1]
 col.caRNA <- colorRampPalette(c("#06A199", "white", "#E0036C"))(20) # pink green
 col.caRNA <- colorRampPalette(c("#B4CA03", "white", "#7F378B"))(20) # pink green
+col.caRNA <- brewer.pal(n = 9,name = 'Set1')[2]
 gdic <- read.csv('../data/mRNA.cluster_old.csv',stringsAsFactors = F)
 rownames(gdic) <- gdic$gene
 

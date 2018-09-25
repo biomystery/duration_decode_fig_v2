@@ -2,7 +2,7 @@
 
 ## Figures
 * [x] Fig. 2D Heat map: Edit heatmap to remove/recategorize 7 genes that were recategorized based on manual curation and are not showing in following figures.
-* [ ] Fig. 4E: we should show the four genes that are yellow in Fig. 4D.
+* [x] Fig. 4E: we should show the four genes that are yellow in Fig. 4D.
 * [ ] Fig. 7B: Show only the genes that model v2 can account for. For the others we cannot make a confident statement.
 
 ## Scientific questions
@@ -14,7 +14,7 @@
 - [ ] Supplemental Figure of Simulations of genes shown in 4D.
 
 ## Methods:
-1. [ ] Detailed description of PolyA+ RNA-seq analyses. 
-2. [ ] Detailed description of ca-RNA-seq analyses.
-3. [ ] mRNA half-life determination
+1. [x] Detailed description of PolyA+ RNA-seq analyses. 
+2. [x] Detailed description of ca-RNA-seq analyses.
+3. [x] mRNA half-life determination
 4. [ ] Detailed description of the model
