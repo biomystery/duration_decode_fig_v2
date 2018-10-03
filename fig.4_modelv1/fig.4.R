@@ -1,6 +1,6 @@
 source('../auxilary_functions.R')
 subfig_folder <- '../figures/Fig.4/subfigs/'
-
+fig_folder <- '../figures/Fig.4/'
 
 # Fig4B: Exp hm---------------------------------------------------------
 # see preprocessing
@@ -229,6 +229,37 @@ if(T){
 
 ggsave(filename = paste(subfig_folder," subfig4e_tc.eps"),height = 4,width = 2.6,
        p + theme(strip.text = element_blank(),text = element_blank()))
+
+# Fig4S all perturb plot with lines  ------------------------------------------------
+pd.tc <- readRDS(file = "./data/kdeg_15m_tc.Rdata")
+pd.tc <- pd.tc %>% 
+  mutate(time=ifelse(type=="Sim.norm",time,time/60))
+pd.tc$type <- factor(pd.tc$type,levels = c("Sim.norm","k_deg"))
+if(T){
+  pdf(file = paste0(fig_folder,"Fig4S.pdf"))
+  for( i in 1:7){
+    eg.genes  <- c(levels(pd.tc$gene),rep(NA,4))[((i-1)*5+1):(i*5)]
+    pd.tc.2 <- pd.tc %>% 
+      filter(gene %in% eg.genes)%>%
+      group_by(gene,geno,type) %>% 
+      dplyr::mutate(normCnt.frac=normCnt.frac/max(normCnt.frac))%>%
+      ungroup%>%
+      mutate(type=recode(type,"Sim.norm"="est.hf.","k_deg"="15m.hf.")) 
+    
+    ### 
+    pd.tc.2$gene <- factor(pd.tc.2$gene,levels = eg.genes)
+    p<-ggplot(pd.tc.2,aes(time,normCnt.frac,colour=sti,linetype=geno)) + geom_line() + 
+      facet_grid(gene~type)+ scale_color_manual(values = col.map) + theme_bw()+ 
+      theme(legend.position = "none")+
+      ylab("Normalized counts fraction")+
+      xlab("Time (h)")
+    
+    ###
+    print(p)
+  }
+  dev.off()
+}
+
 
 
 

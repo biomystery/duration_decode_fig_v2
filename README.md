@@ -10,8 +10,8 @@
 
 ## Supplement
 - [x] Supplemental Table of param values and fit scores of model 1 
-- [ ] Supplemental Table of param values and fit scores of model 2 
-- [ ] Supplemental Figure of Simulations of genes shown in 4D.
+- [x] Supplemental Table of param values and fit scores of model 2 
+- [x] Supplemental Figure of Simulations of genes shown in 4D.
 
 ## Methods:
 1. [x] Detailed description of PolyA+ RNA-seq analyses. 

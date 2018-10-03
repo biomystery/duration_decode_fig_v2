@@ -173,30 +173,9 @@ save(file = 'clustering_cateIII.Rdata',list = c('pd','pd.sum'))
 # clusting III data 2 -----------------------------------------------------
 load('./clustering_cateIII.Rdata')
 
-# filter cluser 6 & cluster 10 
-pd <- pd%>%filter(!clust%in%c(6,10)) 
-pd.sum <- pd.sum%>%filter(!clust%in%c(6,10)) 
-
-# merge 2 & 3 
-pd$clust[pd$clust==3]<-2
-pd.sum$clust[pd.sum$clust==3]<-2
 
 # filter specific genes 
-f.genes <- c('Irg1')
 pd <- pd%>%filter(gene!=f.genes)
-
-# adjust clustering
-pd[pd$gene=="Cxcl10",'clust'] <- 1
-pd[pd$gene=="Bdkrb2",'clust'] <- 4
-#gs <- c()
-pd[pd$gene=="Ccl1",'clust'] <- 4
-pd[pd$gene=="Cd274",'clust'] <- 5
-pd[pd$gene=="Ccl2",'clust'] <- 7
-pd[pd$gene=="Ccl7",'clust'] <- 7
-pd[pd$gene=="Cebpb",'clust'] <- 7
-pd[pd$gene=="Bcl3",'clust'] <- 7
-pd[pd$gene=="ENSMUSG00000041481",'clust'] <- 7
-pd[pd$gene=="Tnip1",'clust'] <-7
 
 # update few gene name
 dic.gene<- getSymbol(grep('ENSM*',unique(pd$gene),value = T))

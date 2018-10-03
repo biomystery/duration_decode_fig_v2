@@ -27,6 +27,7 @@ for(i in 1:3){
 }
 
 # get the best par
+scores.df.final['Rel',]$minModel <- "V1"
 getPars <- function(g=fig5.setting$row_names[1]){
   
   # get the best fit data for hm 
@@ -55,7 +56,6 @@ getPars <- function(g=fig5.setting$row_names[1]){
     pars[c('k2','k_1','k_2','k_3',"Kd1","Kd2","Kd3",
               'kdeg')] <- res.par
   }
-  
 
   return(pars)
 }
