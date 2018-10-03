@@ -1,9 +1,12 @@
 require(tidyverse)
 require(ggplot2)
-fig_dir <- "~/Dropbox/Projects/DurationDecoding/figure/Fig.7/subfigs/"
+subfig_dir <- "../figures/Fig.7/subfigs/"
 # contribution (simulation)  -----------------------------------------------------------
 # load simulation data 
 sim.data <- readRDS(file = "../fig.6_twoStep/pd.fig6.Rds")
+scores.df.final <- read.csv("../fig.6_twoStep/data/final.score.csv",stringsAsFactors = F)
+v2.genes <- scores.df.final%>% filter(minScore<0.13)%>%
+  select(gene)
 names(sim.data)
 attach(sim.data)
 dim(sim_ca_mat)
@@ -25,17 +28,20 @@ pd <- left_join(sp.ca,sp.mRNA,by=c("gene","geno"),suffix=c(".ca",".cyto")) %>%
   mutate(cyto.contri=1-ca.contri)%>% arrange(ca.contri)%>%
   gather(key = "Mechanism",value = "Contribution",2:3)
 
-#pd$Contribution[pd$Contribution>1] = 1; pd$Contribution[pd$Contribution<0] = 0
+pd$Contribution[pd$Contribution>1] = 1; pd$Contribution[pd$Contribution<0] = 0
 
 pd$gene <- factor(pd$gene,levels = pd$gene[1:(nrow(pd)/2)])
 pd$Mechanism <- factor(pd$Mechanism,levels = c("cyto.contri","ca.contri"))
 recode_factor(pd$Mechanism,cyto.contri = "Chr.",ca.contri="T1/2")
-ggplot(pd,aes(gene,Contribution))+
+ggplot(pd%>%filter(gene %in% v2.genes$gene),aes(gene,Contribution))+
   geom_bar(aes(fill=Mechanism),stat = 'identity')+
   coord_flip()+scale_fill_brewer(palette = 'Set1')+
-  theme(axis.title.y = element_blank())+ geom_hline(yintercept =  .5,colour="black",linetype=2)
+  theme(axis.title = element_blank(),legend.position = "none")+ 
+  geom_hline(yintercept =  .5,colour="black",linetype=2)
 
-ggsave(filename = paste0(fig_dir,"subfigA.eps"),width = 8,height = 12,scale = .75)
+ggsave(filename = paste0(subfig_dir,"subfigA.eps"),
+       width = 8,height = 12,scale = .75)
+
 # contribution (data)  -----------------------------------------------------------
 pd.sp.contri<- pd.sp %>% 
   group_by(gene)%>%
