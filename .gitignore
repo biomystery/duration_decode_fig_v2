@@ -9,6 +9,6 @@ plotAllFit.R
 *.Rproj.user
 *history
 .Rproj.user
-figures/Fig.[6-7]/*
 *~*
+
 */.RData

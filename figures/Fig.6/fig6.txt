@@ -1,0 +1,2 @@
+Fig.6 
+(A) Model diagram of two-step model, aka model v2. (B) Best fit example for 3 genes. (C) Simulation heatmap. (Score <0.12 defined as good fit for v2, marked with Yellow; For v1, same as fig4 B) . 

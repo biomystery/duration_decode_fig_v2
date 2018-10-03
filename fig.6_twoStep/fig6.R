@@ -1,5 +1,5 @@
 source("../auxilary_functions.R")
-subfig_dir <- "~/Dropbox/Projects/DurationDecoding/figure/Fig.6/subfigs/"
+subfig_dir <- "../figures/Fig.6/subfigs/"
 
 
 # load data ---------------------------------------------------------------
