@@ -1,6 +1,6 @@
 source("../auxilary_functions.R")
 subfig_dir <- "../figures/Fig.6/subfigs/"
-
+fig_dir <- "../figures/Fig.6/"
 
 # load data ---------------------------------------------------------------
 
@@ -89,10 +89,26 @@ p1 <- plt_bestFit(g="Ccl5")+theme(axis.text= element_blank(),title = element_bla
 p2 <- plt_bestFit(g="Cgn")+theme(axis.text = element_blank(),title = element_blank())
 p3 <- plt_bestFit(g="Fpr1") +theme(axis.text = element_blank(),title = element_blank())
 
-
 ggsave(filename = paste0(subfig_dir,'subfig6B_egs.eps'),
   grid.arrange(grobs=list(p1,p2,p3)),
   width = 6,height = 4)
+
+if(T){
+  pdf(file = paste0(fig_dir,'fig6s.pdf'),width = 6,height = 4)
+  sapply(1:27, function(x){
+    gs<- rownames(pd.scores)[((x-1)*3+1):(x*3)]
+    p1 <- plt_bestFit(g=gs[1])+
+      theme(axis.text= element_blank(),title = element_blank())
+    p2 <- plt_bestFit(g=gs[2])+
+      theme(axis.text = element_blank(),title = element_blank())
+    p3 <- plt_bestFit(g=gs[3]) +
+      theme(axis.text = element_blank(),title = element_blank())
+    grid.arrange(grobs=list(p1,p2,p3))
+  }
+  )
+  dev.off()
+}
+
 
 # C - heatmap of best Fit  ------------------------------------------------
 # prepare heatmap (simulation) data matrix 
@@ -199,7 +215,8 @@ rownames(pd.scores.v1) <- rownames(pd.scores) <- fig5.setting$row_names
 setEPS()
 postscript(paste0(subfig_dir,"subfig6c_sim_score_v2.eps"),
            onefile = F,width = 1,height = 10)
-pheatmap(pd.scores,cluster_rows = F,cluster_cols = F,breaks =  c(0,.12,0.5),
+pheatmap(pd.scores,cluster_rows = F,cluster_cols = F,
+         breaks =  c(0,.13,0.5),
          gaps_row = fig5.setting$row_seps-1,
          cellwidth = 12,
          show_rownames = F,
@@ -207,6 +224,13 @@ pheatmap(pd.scores,cluster_rows = F,cluster_cols = F,breaks =  c(0,.12,0.5),
          color = c("yellow","black"))  
 dev.off()
 
+pheatmap(pd.scores,cluster_rows = F,cluster_cols = F,
+         breaks =  c(0,.13,0.5),
+         gaps_row = fig5.setting$row_seps-1,
+         cellwidth = 12,
+         show_rownames = T,fontsize_row = 6,
+         show_colnames = F,legend = F,
+         color = c("yellow","black")) 
 
 setEPS()
 postscript(paste0(subfig_dir,"subfig6c_sim_score_v1.eps"),
