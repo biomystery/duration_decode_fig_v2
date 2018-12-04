@@ -17,7 +17,7 @@ calSp <- function(simData=sim_ca_mat){
     gather(key = "conditions",value = "expression",1:ncol(simData))%>%
     separate(conditions,into = c("geno","sti","time"),sep = "_")  %>%
     group_by(gene,geno,sti)%>% summarise(m=max(expression))%>%
-    summarise(sp=m[1]/m[2])
+    summarise(sp=log2(m[1]/m[2]))
 }
 
 sp.ca <- calSp()
@@ -43,18 +43,90 @@ ggsave(filename = paste0(subfig_dir,"subfigA.eps"),
        width = 8,height = 12,scale = .75)
 
 # contribution (data)  -----------------------------------------------------------
-pd.sp.contri<- pd.sp %>% 
+pd.sp <- readRDS('../fig.5_caRNA/data/pd.merge.sp.Rds')
+dat.sp.pd <-pd.sp%>%mutate(ca.delta=ca.ctrl.sp-ca.mt.sp,
+               cyto.delta=cyto.ctrl.sp-cyto.mt.sp)%>%
+  select(-contains("ctrl"))%>%
+  gather(key = 'key',
+         value="sp",c(1,2,4,5))%>%
+  mutate(key=sub(".sp","",key))%>%
+  separate(key,into = c("type","geno"),sep = "[.]")
+
+ggplot(dat.sp.pd,aes(gene,sp)) +
+  geom_bar(stat = 'identity',aes(fill=geno))+
+  coord_flip()+
+  facet_wrap(~type)+
+  geom_hline(yintercept = 0.5)
+
+# new version -------------------------------------------------------------
+pd.new <- left_join(sp.ca,sp.mRNA,by=c("gene","geno"),suffix=c(".ca",".cyto"))
+sp.mRNA.pd <- sp.mRNA%>%
   group_by(gene)%>%
-  summarize(ca.contri=(Control[1]-Mutant[1])/(Control[2]-Mutant[2]))
-pd.sp.contri<-pd.sp.contri%>%arrange(ca.contri)
-pd.sp.contri.2 <-pd.sp.contri%>%
-  mutate(cyto.contri = 1-ca.contri)%>%
-  gather(key=Species,Contribution,2:3)
-pd.sp.contri.2$gene <- factor(pd.sp.contri.2$gene,
-                              levels = pd.sp.contri$gene)
-pd.sp.contri.2$Species<- factor(pd.sp.contri.2$Species,
-                                levels = c("cyto.contri","ca.contri"))
-ggplot(pd.sp.contri.2,aes(gene,Contribution))+
-  geom_bar(aes(fill=Species),stat = 'identity')+
-  coord_flip()+scale_fill_brewer(palette = 'Set1')
-pd.sp%>%filter(gene=='Cx3cl1')
+  summarise(Delta=sp[1]-sp[2],
+            Mutant=sp[2])%>%
+  gather(key = "geno",value = "sp",2:3)
+sp.ca.pd <- sp.ca%>%
+  group_by(gene)%>%
+  summarise(Delta=sp[1]-sp[2],
+            Mutant=sp[2])%>%
+  gather(key = "geno",value = "sp",2:3)
+
+sp.pd <- rbind(data.frame(sp.mRNA.pd,type='cyto'),
+               data.frame(sp.ca.pd,type='ca'))
+  
+ggplot(sp.pd,aes(gene,sp)) +
+  geom_bar(stat = 'identity',aes(fill=geno))+
+  coord_flip()+
+  facet_wrap(~type)+
+  geom_hline(yintercept = 0.5)
+
+## merged sim and dat
+pd.all <- bind_rows(dat.sp.pd%>%
+  mutate(type=paste0(type,".dat"),
+         geno= recode(geno,delta="Delta",mt="Mutant")),
+  sp.pd%>%
+    mutate(type=paste0(type,".sim")))%>%
+  mutate(type=factor(type,levels = c("ca.dat","cyto.dat","ca.sim","cyto.sim")))
+
+ggplot(pd.all,aes(gene,sp)) +
+  geom_bar(stat = 'identity',aes(fill=geno))+
+  coord_flip()+
+  facet_wrap(~type,nrow = 1)+
+  geom_hline(yintercept = 0.5)
+
+
+# Merge the contribution  -------------------------------------------------
+pd.all.2 <- pd.all%>%
+  filter(type%in%c("ca.sim","cyto.sim"))%>%
+  mutate(sp=ifelse(sp<0,0,sp))
+  
+  
+ggplot(pd.all.2,aes(gene,sp)) +
+  geom_bar(stat = 'identity',aes(fill=geno))+
+  coord_flip()+
+  facet_wrap(~type,nrow = 1)+
+  geom_hline(yintercept = 0.5)
+
+pd.all.3<- pd.all.2%>%
+  group_by(gene)%>%
+  unite(col = "geno_type",2:3)%>%
+  spread(key = "geno_type",value = "sp")%>%
+  mutate(cyto.sim_DegContri=cyto.sim_Delta-ca.sim_Delta)%>%
+  select(-c(3,4))%>%
+  mutate(cyto.sim_DegContri=ifelse(cyto.sim_DegContri<0,0,cyto.sim_DegContri))%>%
+  gather(key = "Specificity",value = "SP",2:4)%>%
+  mutate(Specificity=recode(Specificity,'ca.sim_Delta'="cyto.sim_CaContri",
+                            'cyto.sim_Mutant'="cyto.sim_Remain"))%>%
+  mutate(Specificity=factor(Specificity,levels = rev(c("cyto.sim_Remain",
+                                                   "cyto.sim_CaContri",
+                                                   "cyto.sim_DegContri"))))
+  
+
+ggplot(pd.all.3,aes(gene,SP)) +
+  geom_bar(stat = 'identity',aes(fill=Specificity))+
+  coord_flip(expand = F)+
+  geom_hline(yintercept = 0.5)+
+  scale_fill_manual(values = rev(c("grey",col.caRNA,col.cytoRNA)))
+  
+
+  

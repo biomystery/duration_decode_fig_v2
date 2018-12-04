@@ -41,7 +41,7 @@ pd.merge.sp <- data.frame(cyto.ctrl.sp=log2(rowMax(pd.merge[,25:31])/rowMax(pd.m
                           ca.ctrl.sp = log2(rowMax(pd.merge[,1:6])/rowMax(pd.merge[,7:12])),
                           ca.mt.sp = log2(rowMax(pd.merge[,13:18])/rowMax(pd.merge[,19:24]))) 
 pd.merge.sp <- pd.merge.sp %>%  mutate(gene=rownames(pd.merge.sp))
-
+saveRDS(pd.merge.sp,"./data/pd.merge.sp.Rds")
 # Fig5B: Sp pieplot  -------------------------------------------------------------
 if(T){
   setEPS()
