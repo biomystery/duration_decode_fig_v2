@@ -52,11 +52,6 @@ dat.sp.pd <-pd.sp%>%mutate(ca.delta=ca.ctrl.sp-ca.mt.sp,
   mutate(key=sub(".sp","",key))%>%
   separate(key,into = c("type","geno"),sep = "[.]")
 
-ggplot(dat.sp.pd,aes(gene,sp)) +
-  geom_bar(stat = 'identity',aes(fill=geno))+
-  coord_flip()+
-  facet_wrap(~type)+
-  geom_hline(yintercept = 0.5)
 
 # new version -------------------------------------------------------------
 pd.new <- left_join(sp.ca,sp.mRNA,by=c("gene","geno"),suffix=c(".ca",".cyto"))
@@ -128,5 +123,5 @@ ggplot(pd.all.3,aes(gene,SP)) +
   geom_hline(yintercept = 0.5)+
   scale_fill_manual(values = rev(c("grey",col.caRNA,col.cytoRNA)))
   
-
+saveRDS(pd.all.3,file='fig7B.rds')
   
