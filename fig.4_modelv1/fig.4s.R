@@ -1,7 +1,15 @@
 source("../auxilary_functions.R")
 
 # export parameters  ------------------------------------------------------
-pars.v1 <- read.csv(file='./models/mRNA-Fit-avg-sp-v1e/result-RMSD.csv')
+load('../fig.4_modelv1/data/clustering_cateIII_clean.Rdata')
+pars.v1 <- read.csv(file='./models/mRNA-Fit-avg-sp-v1e/result-RMSD.csv',stringsAsFactors = F)
+pars.v1.2 <- read.csv(file='./models/mRNA-Fit-avg-sp-v1d/result-RMSD.csv',stringsAsFactors = F)
+
+pars.v1.all <- rbind(pars.v1[,-c(1,6)],pars.v1.2[-(76:88),-1])
+
+dic.gene<- read.csv('../data/mRNA.cluster_old.csv',stringsAsFactors = F)[,c("gene","gene.2")]%>%
+  column_to_rownames('gene')
+pars.v1.all$gene =dic.gene[pars.v1.all$gene,'gene.2']
 
 # R2 histgram -------------------------------------------------------------
 
@@ -171,8 +179,7 @@ pd <- pd %>% mutate(clust=anno_row[gene,"cluster"])
 save(file = 'clustering_cateIII.Rdata',list = c('pd','pd.sum'))
 
 # clusting III data 2 -----------------------------------------------------
-load('./clustering_cateIII.Rdata')
-
+env=new.env();load('./data/clustering_cateIII.Rdata',env)
 
 # filter specific genes 
 pd <- pd%>%filter(gene!=f.genes)

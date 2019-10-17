@@ -28,6 +28,7 @@ for(i in 1:3){
 
 # get the best par
 scores.df.final['Rel',]$minModel <- "V1"
+
 getPars <- function(g=fig5.setting$row_names[1]){
   
   # get the best fit data for hm 
@@ -59,16 +60,15 @@ getPars <- function(g=fig5.setting$row_names[1]){
 
   return(pars)
 }
-
+fig5.setting <- read_rds(path = "../fig.5_caRNA/data/pd.fig5.Rds")
 pars  <- lapply(fig5.setting$row_names,getPars)
 pars <- do.call(rbind,pars)
 
 rownames(pars) <- fig5.setting$row_names
 pars <- as.data.frame(pars)
-
-write.table(apply(cbind(scores.df.final[,-c(1,4)],pars[rownames(scores.df.final),]),
-                  2, as.character),row.names = F,
-          file = "model_v2_pars.csv",quote = F,sep = ",")
+pars.final <- cbind(scores.df.final[,-c(1,4)],pars[rownames(scores.df.final),])
+write.table(apply(pars.final,2, as.character),row.names = F,
+          file = "./data/model_v2_pars.csv",quote = F,sep = ",")
 
 # B - example bestfit -----------------------------------------------------
 plt_bestFit <- function(g="Slfn2"){
@@ -89,6 +89,7 @@ p1 <- plt_bestFit(g="Ccl5")+theme(axis.text= element_blank(),title = element_bla
 p2 <- plt_bestFit(g="Cgn")+theme(axis.text = element_blank(),title = element_blank())
 p3 <- plt_bestFit(g="Fpr1") +theme(axis.text = element_blank(),title = element_blank())
 
+sapply(c('Ccl5','Cgn','Fpr1'), function(g))
 ggsave(filename = paste0(subfig_dir,'subfig6B_egs.eps'),
   grid.arrange(grobs=list(p1,p2,p3)),
   width = 6,height = 4)
