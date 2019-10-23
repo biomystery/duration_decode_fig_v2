@@ -22,6 +22,7 @@ getScore <- function(f){
 }
 scores.df.final <- getScore('./data/v1_')%>%mutate(minModel='V1')
 fwrite(scores.df.final,'./data/final.score.csv')
+scores.df.final<- scores.df.final%>%column_to_rownames("gene")
 #scores.df.final <- read.csv("./data/final.score.csv",stringsAsFactors = F)
 #rownames(scores.df.final)<- scores.df.final$gene
 sum(scores.df.final$minScore<.15) #63
