@@ -14,9 +14,17 @@ pd.tc$Time <- as.numeric(pd.tc$Time)
 
 
 # Score histogram 
-scores.df.final <- read.csv("./data/final.score.csv",stringsAsFactors = F)
-rownames(scores.df.final)<- scores.df.final$gene
-
+getScore <- function(f){
+  fit <- readRDS(paste0(f,'allRes.Rds'))
+  data.frame(gene=unlist(lapply(fit,function(x) x$plt$data$gene%>%unique)),
+             minScore=unlist(lapply(fit,function(x) x$fitRes$value)))
+             
+}
+scores.df.final <- getScore('./data/v1_')%>%mutate(minModel='V1')
+fwrite(scores.df.final,'./data/final.score.csv')
+#scores.df.final <- read.csv("./data/final.score.csv",stringsAsFactors = F)
+#rownames(scores.df.final)<- scores.df.final$gene
+sum(scores.df.final$minScore<.15) #63
 
 # prepare data (exp + best fit results)
 res_fils <- list.files("./data","*_allRes.Rds")
@@ -61,11 +69,10 @@ getPars <- function(g=fig5.setting$row_names[1]){
   return(pars)
 }
 fig5.setting <- read_rds(path = "../fig.5_caRNA/data/pd.fig5.Rds")
-pars  <- lapply(fig5.setting$row_names,getPars)
-pars <- do.call(rbind,pars)
 
+pars <- do.call(rbind,lapply(fig5.setting$row_names,getPars))%>%as.data.frame
 rownames(pars) <- fig5.setting$row_names
-pars <- as.data.frame(pars)
+
 pars.final <- cbind(scores.df.final[,-c(1,4)],pars[rownames(scores.df.final),])
 write.table(apply(pars.final,2, as.character),row.names = F,
           file = "./data/model_v2_pars.csv",quote = F,sep = ",")
