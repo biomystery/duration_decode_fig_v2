@@ -6,9 +6,10 @@ loadLib <- function (){
   require(tidyr)
   require(dplyr)
   require(gridExtra)
-  col.map <- c(LPS="#f8766d",TNF="#00ba38",IL1="#619cff")
+  
 }
 loadLib()
+col.map <- c(LPS="#f8766d",TNF="#00ba38",IL1="#619cff")
 # functions ---------------------------------------------------------------
 ## subroutine: The model
 odeModel <- function (Time, State, Pars) {
@@ -70,7 +71,7 @@ pars<- list(k1=1,k2=1,k_1=log(2)/6,k_2=log(2)/480,k_3=0,
 #input.set  <- readRDS(file='../../Fig_code/fig.2_knockout/subfig2A.rds')
 #ggplot_build(input.set)$data[[2]]
 ev <- new.env()
-load(file='../mRNA-Fit-avg-sp-v1d/mRNA-Fit-avg-sp-v1c-pre.Rdata',ev)
+load(file='../data/mRNA-Fit-avg-sp-v1c-pre.Rdata',ev)
 nfkb.input.set <- rbind(data.frame(ev$input.emsa.ifnar%>% gather(key="Stimuli",value = "Value",2:4),
                                    Genotype='Control',stringsAsFactors = F),
                         data.frame(ev$input.emsa.ifnarikba%>% gather(key="Stimuli",value = "Value",2:4),

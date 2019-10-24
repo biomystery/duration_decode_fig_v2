@@ -3,7 +3,7 @@ require(ggplot2)
 require(dplyr)
 # load all the data --------------------------------------------------------------
 
-rpkm.all<- read.csv(file='./data/rpkm.all.csv',stringsAsFactors = F,
+rpkm.all<- read.csv(file='../data/rpkm.all.csv',stringsAsFactors = F,
                     row.names = 1)
 noLegend <- theme(legend.position = 'none')
 # plot1_tc ----------------------------------------------------------------
@@ -36,7 +36,7 @@ if (length(args)==0) {
 } 
 
 gt <- args[1]
-
+#gt <- 'Acpp'
 
 
 # plot2_maxRPKM -----------------------------------------------------------
@@ -82,7 +82,7 @@ fun.obj <- function(pars.b,doTrace=F){
             summarise(score= sum(w^2*Residual^2)))$score))
 }
 # test
-if(F){ # TEST 
+if(T){ # TEST 
   system.time(fun.obj(pars.b = pars,doTrace = T))
   #   user  system elapsed 
   #6.020   0.078   6.174 
@@ -141,8 +141,8 @@ fun.obj_wapper.1 <- function(pars.fit,plotFlag=F){
 }
 
 # optimization ------------------------------------------------------------
-kdegs <- readRDS(file='./data/genes.kdeg.Rds')
-resDir <- "./3rd_fit_9pars_measured_deg/"
+kdegs <- readRDS(file='../data/genes.kdeg.Rds')
+resDir <- "./hill_1"
 NUM_ITER <- 0;BEST_SCORE<- 9999
 
 #pars.2[c('k2','k3','k_1','k_2','k_3',"Kd1","Kd2","Kd3",
