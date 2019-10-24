@@ -22,7 +22,7 @@ getScore <- function(f){
 }
 scores.df.final <- getScore('./data/v1_')%>%mutate(minModel='V1')
 fwrite(scores.df.final,'./data/final.score.csv')
-scores.df.final<- scores.df.final%>%column_to_rownames("gene")
+rownames(scores.df.final)<- scores.df.final$gene
 #scores.df.final <- read.csv("./data/final.score.csv",stringsAsFactors = F)
 #rownames(scores.df.final)<- scores.df.final$gene
 sum(scores.df.final$minScore<.15) #63
@@ -74,9 +74,12 @@ fig5.setting <- read_rds(path = "../fig.5_caRNA/data/pd.fig5.Rds")
 pars <- do.call(rbind,lapply(fig5.setting$row_names,getPars))%>%as.data.frame
 rownames(pars) <- fig5.setting$row_names
 
-pars.final <- cbind(scores.df.final[,-c(1,4)],pars[rownames(scores.df.final),])
+pars.final <- cbind(scores.df.final,pars[rownames(scores.df.final),])%>%dplyr::select(-minModel)
 write.table(apply(pars.final,2, as.character),row.names = F,
-          file = "./data/model_v2_pars.csv",quote = F,sep = ",")
+          file = "./data/model_v2_pars.full.csv",quote = F,sep = ",")
+
+write.table(apply(pars.final,2, as.character),row.names = F,
+            file = "./data/model_v2_pars.full.csv",quote = F,sep = ",")
 
 # B - example bestfit -----------------------------------------------------
 plt_bestFit <- function(g="Slfn2"){
