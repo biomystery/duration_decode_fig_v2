@@ -83,7 +83,7 @@ fun.obj <- function(pars.b,doTrace=F){
             summarise(score= sum(w^2*Residual^2)))$score))
 }
 # test
-if(T){ # TEST
+if(F){ # TEST
   system.time(fun.obj(pars.b = pars,doTrace = T))
   #   user  system elapsed
   #6.020   0.078   6.174
@@ -92,14 +92,14 @@ if(T){ # TEST
   #5.412   0.045   5.496
 }
 
-pars$TS <- 60*8
+
 fun.obj_wapper.1 <- function(pars.fit,plotFlag=F){
   pars.2 <- pars
   #pars<- list(k1=1,k2=1,k_1=log(2)/6,k_2=log(2)/480,k_3=0,
   #            Kd1=.5,Kd2=.5,Kd3=.5,n1=3,n2=3,n3=3,kp=1,kt=1,
   #            kdeg=log(2)/30,nfkb_input=0.02,k2_0=0,KdA=0.5,nA=3,
   #            TS=120)
-  pars.2[c('k2','k_1','k_2','k_3',"Kd1","Kd2","Kd3",
+  pars.2[c('k_1','k_2',"Kd1","Kd2",
            'kdeg')] <- 10^pars.fit
 
 
