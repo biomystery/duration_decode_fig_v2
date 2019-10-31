@@ -126,3 +126,79 @@ if(F){
                nrow=2,heights=c(1,4),widths=c(3,3,3.5))
 
 }
+
+
+
+# fitting -----------------------------------------------------------------
+rpkm.all<- read.csv(file='../data/rpkm.all.csv',stringsAsFactors = F,
+                  row.names = 1)
+
+pd.maxRPKM <- rpkm.all %>% group_by(Genotype,gene,Species,Stimuli)%>%
+  summarise(max.rpkm = max(rpkm))
+
+fun.pltmaxRPKM <- function(pd=pd.maxRPKM,g){
+  ggplot(pd%>% filter(gene==g),
+         aes(Species,max.rpkm,fill=Species))+
+    geom_bar(stat = 'identity')  +
+    facet_wrap(~ Genotype+Stimuli,ncol = 4)}
+
+
+noLegend <- theme(legend.position = 'none')
+
+pd.tc <- rpkm.all %>% group_by(Genotype,gene,Species)%>%
+  mutate(max.rpkm = max(rpkm),
+         frac.exp = rpkm/max(rpkm))
+
+pd.tc$Time <- as.numeric(pd.tc$Time)
+
+
+fun.pltTC <- function(pd=pd.tc,g,dotOnly=F){
+  p <- ggplot(pd.tc%>% filter(gene==g),aes(Time,frac.exp,colour=Species)) +
+    geom_point()+ facet_wrap(~ Genotype+Stimuli,ncol = 4)
+  if(!dotOnly)
+    return(p+ geom_line())
+  else
+    return(p)
+}
+
+fun.obj <- function(pars.b,doTrace=F,showAll=F){
+  pd.sim <- runSim(pars = pars.b)$data  %>%
+    filter(Species %in% c("A",'mRNA'))%>%
+    group_by(Genotype,Species) %>%
+    mutate(level=level/max(level))
+  pd.sim$Species <- recode(pd.sim$Species,A='caRNA',mRNA='cytoRNA')
+  pd.sim$Stimuli <- recode(pd.sim$Stimuli,LPS='Lps',TNF='Tnf')
+  colnames(pd.sim)<-c('Time',"Species","frac.exp","Genotype","Stimuli")
+  pd.sim$Time <- pd.sim$Time/60
+  plt.tc <- fun.pltTC(g = gt,dotOnly = T)+noLegend
+  plt.tc_sim <- plt.tc + geom_line(data = pd.sim)
+  if(doTrace) print(plt.tc_sim)
+  pd.tc_sim <- rbind(data.frame(pd.sim,type='Sim'),
+                     data.frame(plt.tc$data[,colnames(pd.sim)],
+                                type="Exp"))%>%
+    spread(key=type,value=frac.exp)
+  pd.tc_sim<- pd.tc_sim[complete.cases(pd.tc_sim),]%>%
+    mutate(Residual= Sim-Exp)
+  
+  pd.weight <- pd.maxRPKM%>% filter(gene==gt)%>%
+    group_by(Genotype,Species)%>%
+    mutate(w=max(max.rpkm))%>%
+    ungroup()%>%
+    mutate(w=w/sum(w)*2)
+  
+  # weighted score
+  if(showAll){
+    return(list(score=(pd.tc_sim %>% 
+                         left_join(pd.weight[,],
+                                   by=c("Species","Genotype","Stimuli"))%>%
+                         summarise(score= sum(w^2*Residual^2)))$score,
+                plt = plt.tc_sim,
+                simData = pd.sim))
+  }else{
+    return(list(score=(pd.tc_sim %>%
+                         left_join(pd.weight[,],
+                                   by=c("Species","Genotype","Stimuli"))%>%
+                         summarise(score= sum(w^2*Residual^2)))$score))
+    
+  }
+}
