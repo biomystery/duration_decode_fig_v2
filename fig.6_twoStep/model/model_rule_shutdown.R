@@ -162,6 +162,7 @@ fun.pltTC <- function(pd=pd.tc,g,dotOnly=F){
 }
 
 fun.obj <- function(pars.b,doTrace=F,showAll=F){
+  ## need global variable - gt
   pd.sim <- runSim(pars = pars.b)$data  %>%
     filter(Species %in% c("A",'mRNA'))%>%
     group_by(Genotype,Species) %>%
@@ -202,3 +203,5 @@ fun.obj <- function(pars.b,doTrace=F,showAll=F){
     
   }
 }
+
+

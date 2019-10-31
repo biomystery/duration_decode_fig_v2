@@ -1,12 +1,14 @@
+rm(list = ls(all.names = T))
 source('../auxilary_functions.R')
+require(data.table)
 require(tidyverse)
 require(ggplot2)
 subfig_dir <- "../figures/Fig.7/subfigs/"
 # contribution (simulation)  -----------------------------------------------------------
 # load simulation data 
 sim.data <- readRDS(file = "../fig.6_twoStep/pd.fig6.Rds")
-scores.df.final <- read.csv("../fig.6_twoStep/data/final.score.csv",stringsAsFactors = F)
-v2.genes <- scores.df.final%>% filter(minScore<0.13)%>%
+v2.genes <- fread("../fig.6_twoStep/data/model_v2_pars.csv")%>%
+  filter(score<0.13)%>%
   dplyr::select(gene)
 names(sim.data)
 attach(sim.data)
@@ -136,9 +138,9 @@ if(T){
     scale_fill_manual(values = rev(c("grey",col.caRNA,col.cytoRNA)))
   
   
-  ggsave(filename = paste0(subfig_dir,'subfig7B.pdf'),
-         width = 4,height = 8,units = 'in',scale=1.5)
-  system(paste0('open ',subfig_dir,'subfig7B.pdf'))
+  ggsave(filename = paste0(subfig_dir,'Fig7B.pdf'),
+         width = 4,height = 8,units = 'in',scale=1.5);system(paste0("open ",subfig_dir,'Fig7B.pdf'))
+  
 
   ## subfigC 
   require(ggrepel)
@@ -152,10 +154,8 @@ if(T){
     geom_text_repel(data=pd.subfigC%>%filter(cate!='none'),aes(label=gene),point.padding = NA)+
     theme_bw()+theme(legend.position = 'none')+ coord_fixed()
   
-  ggsave(filename = paste0(subfig_dir,'subfig7C.pdf'),useDingbats=F,
-         width = 2,height = 4,units = 'in',scale = 2)
-  
-  system(paste0('open ',subfig_dir,'subfig7C.pdf'))
+  ggsave(filename = paste0(subfig_dir,'Fig7C.pdf'),useDingbats=F,
+         width = 2,height = 4,units = 'in',scale = 2);system(paste0('open ',subfig_dir,'Fig7C.pdf'))
   
 }
 

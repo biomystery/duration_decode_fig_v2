@@ -66,45 +66,7 @@ plt.sp.all<- ggplot(data.frame(Control=c(0.5,0.5,8,8,0.5,0.5,8,8,-3,-3,0.5,0.5),
 
 # objective function -----------------------------------------------------------
 source('./model_rule_shutdown.R')
-fun.obj <- function(pars.b,doTrace=F){
-  pd.sim <- runSim(pars = pars.b)$data  %>% 
-    filter(Species %in% c("A",'mRNA'))%>%
-    group_by(Genotype,Species) %>%
-    mutate(level=level/max(level))
-  pd.sim$Species <- recode(pd.sim$Species,A='caRNA',mRNA='cytoRNA')
-  pd.sim$Stimuli <- recode(pd.sim$Stimuli,LPS='Lps',TNF='Tnf')
-  colnames(pd.sim)<-c('Time',"Species","frac.exp","Genotype","Stimuli") 
-  pd.sim$Time <- pd.sim$Time/60 
-  plt.tc <- fun.pltTC(g = gt,dotOnly = T)+noLegend
-  plt.tc_sim <- plt.tc + geom_line(data = pd.sim)
-  if(doTrace) print(plt.tc_sim)  
-  pd.tc_sim <- rbind(data.frame(pd.sim,type='Sim'),
-                     data.frame(plt.tc$data[,colnames(pd.sim)],
-                                type="Exp"))%>%
-    spread(key=type,value=frac.exp)
-  pd.tc_sim<- pd.tc_sim[complete.cases(pd.tc_sim),]%>%
-    mutate(Residual= Sim-Exp)
-  
-  pd.weight <- pd.maxRPKM%>% filter(gene==gt)%>%
-    group_by(Genotype,Species)%>%
-    mutate(w=max(max.rpkm))%>%
-    ungroup()%>%
-    mutate(w=w/sum(w)*2)
-  
-  # weighted score
-  return(list(score=(pd.tc_sim %>% 
-            left_join(pd.weight[,],
-                      by=c("Species","Genotype","Stimuli"))%>%
-            summarise(score= sum(w^2*Residual^2)))$score,
-            plt = plt.tc_sim,
-            simData = pd.sim))
-}
 
-pars$TS <- 60*8 
-
-
-
-# plot_best_fit -----------------------------------------------------------
 resDir <- './1st_fit_4pars_free_deg/'
 res.files<- list.files(path = resDir,pattern = "*.Rdata")
 gs <- sub(".Rdata","",res.files)
@@ -174,3 +136,31 @@ if(T){
   dev.off()
 }
 
+
+# validate results  -------------------------------------------------------
+plt.bestFits <- readRDS('../data/v1_allRes.Rds')
+
+pars.2 <- pars
+# Acpp
+pars.2[c('k_1','k_2',"Kd1","Kd2",'kdeg')] <- 10^plt.bestFits[[1]]$fitRes$par
+t(pars.2)
+a<- fun.obj(pars.b = pars.2,showAll = T)
+
+# Ccl5
+gt<- "Ccl5"
+pars.2[c('k_1','k_2',"Kd1","Kd2",'kdeg')] <- 10^plt.bestFits[[9]]$fitRes$par
+plt.bestFits[[9]]$fitRes$value
+a<- fun.obj(pars.b = pars.2,showAll = T)
+a$plt
+a$score
+
+
+## Bdkrb2 
+
+
+gt<- "Bdkrb2"
+pars.2[c('k_1','k_2',"Kd1","Kd2",'kdeg')] <- 10^plt.bestFits[[6]]$fitRes$par
+plt.bestFits[[6]]$fitRes$value
+a<- fun.obj(pars.b = pars.2,showAll = T)
+a$plt+scale_color_brewer(palette = 'Set1',direction = -1)
+a$score
