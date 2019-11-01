@@ -42,8 +42,6 @@ ggplot(pd%>%filter(gene %in% v2.genes$gene),aes(gene,Contribution))+
   theme(axis.title = element_blank(),legend.position = "none")+ 
   geom_hline(yintercept =  .5,colour="black",linetype=2)
 
-ggsave(filename = paste0(subfig_dir,"subfigA.eps"),
-       width = 8,height = 12,scale = .75)
 
 # contribution (data)  -----------------------------------------------------------
 pd.sp <- readRDS('../fig.5_caRNA/data/pd.merge.sp.Rds')
@@ -125,7 +123,7 @@ if(T){
   
   
   pd.subfigB.ord <- pd.all.3%>%spread(key = Specificity,value = SP)%>%
-    mutate(group=ifelse(cyto.sim_DegContri<0.1,1,
+    mutate(group=ifelse(cyto.sim_DegContri<0.15,1,
                         ifelse(cyto.sim_CaContri<.15,3,2)),
            sp=cyto.sim_DegContri+cyto.sim_CaContri+cyto.sim_Remain)%>%
     arrange(desc(group),(sp))%>%pull(gene)
@@ -157,6 +155,14 @@ if(T){
   ggsave(filename = paste0(subfig_dir,'Fig7C.pdf'),useDingbats=F,
          width = 2,height = 4,units = 'in',scale = 2);system(paste0('open ',subfig_dir,'Fig7C.pdf'))
   
+  ggplot(pd.subfigC,aes( cyto.sim_DegContri,cyto.sim_CaContri)) +
+    geom_point()+
+    scale_color_manual(values = c('ca'=col.caRNA,'cyto'=col.cytoRNA))+
+    geom_text_repel(aes(label=gene),point.padding = NA)+
+    theme_bw()+theme(legend.position = 'none')+ coord_fixed()
+  ggsave(filename = paste0(subfig_dir,'Fig7C_label.pdf'),useDingbats=F,
+         width = 2,height = 4,units = 'in',scale = 2);system(paste0('open ',subfig_dir,'Fig7C_label.pdf'))
+  
 }
 
 
@@ -183,6 +189,14 @@ if(T){
                                                          "cyto.dat_DegContri"))))
   
   
+  pd.subfigB.ord <- pd.all.3%>%spread(key = Specificity,value = SP)%>%
+    mutate(group=ifelse(cyto.dat_DegContri<0.2,1,
+                        ifelse(cyto.dat_CaContri<.15,3,2)),
+           sp=cyto.dat_DegContri+cyto.dat_CaContri+cyto.dat_Remain)%>%
+    arrange(desc(group),(sp))%>%pull(gene)
+  
+
+    
   ggplot(pd.all.3%>%ungroup%>%mutate(gene=factor(gene,levels = pd.subfigB.ord)),aes(gene,SP)) +
     geom_bar(stat = 'identity',aes(fill=Specificity))+
     coord_flip(expand = F)+
@@ -192,8 +206,7 @@ if(T){
   
   
   ggsave(filename = paste0(subfig_dir,'subfig7B_dat.pdf'),
-         width = 4,height = 8,units = 'in',scale=1.5)
-  system(paste0('open ',subfig_dir,'subfig7B_dat.pdf'))
+         width = 4,height = 8,units = 'in',scale=1.5);  system(paste0('open ',subfig_dir,'subfig7B_dat.pdf'))
   
   ## subfigC 
   require(ggrepel)
