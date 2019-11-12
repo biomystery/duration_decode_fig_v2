@@ -135,7 +135,7 @@ plotLegend(cols = cols,
            bks = bks,
            fnames = paste0(subfig_dir,"z_rpkm_batchScale_lg.eps"))
 
-# Fig1C: sp scatter --------------------------------------------------------
+# Fig1D: sp scatter --------------------------------------------------------
 
 ### sp plot 
 sp.mat <- read.csv(file='../data/mRNA.sp.peak.csv',row.names = 1,stringsAsFactors = F)
@@ -177,7 +177,7 @@ plotLegend(cols = cols,bks = bks,fnames = paste0(subfig_dir,"sp_zrpkm_genoScale_
 signif(bks,2)
 
 
-# fig1.c Pie------------------------------------------------------------------
+# fig1.E Pie------------------------------------------------------------------
 pd.venn.ctrl <- getVennData(simplify = T,sp.th.val = .5,sp.mat = sp.mat,gtype = "ctrl")
 setEPS()
 postscript(paste0(fig_folder,"subfig1c_pie_th1_",type,"_gtype_","ctrl.eps"),
