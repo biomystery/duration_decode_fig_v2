@@ -105,12 +105,20 @@ table(pd.cate)
 # check data and sp 
 all.equal(rownames(sp.mat),rownames(pd)) #TRUE 
 
+# save categores 
+data.table::fwrite(data.frame(gene=rownames(sp.mat),
+                  cate=ifelse(pd.cate==1,'TNF-specific',
+                             ifelse(pd.cate==2,'non-specific','LPS-specific'))),
+                  './data/gene.cat.csv')
+
+# plot 
 pd.scale <- cbind(t(scale(t(pd[,1:21]))),
                   t(scale(t(pd[,43:63]))))
 
 pd.scale[pd.scale>3] <- 3; pd.scale[pd.scale< -3] <- -3
 pd.ord <-apply(pd.scale[,1:7],1, which.max)
 pd.ord <- (data.frame(pd.cate,pd.ord,id=seq(1:nrow(pd))) %>% arrange(pd.cate,pd.ord))
+fwrite(pd.ord,'data/fig1f.order.csv')
 seps<- sapply(1:3, function(i) max(which(pd.ord$pd.cate==i)))
 cols <- colorRampPalette(c("mediumblue", "white", "firebrick1"))(20)
 bks <- seq(-max(pd.scale),max(pd.scale),length.out = 21)
