@@ -8,16 +8,17 @@ dat.emsa.mt <- read.csv(file = '../data/Final_EMSA_ifnarikba.csv')
 colnames(dat.emsa.mt) <- sub('time',"Time",colnames(dat.emsa.mt))
 dat.emsa <- rbind(dat.emsa.ctrl,dat.emsa.mt)
 dat.emsa$genotype=c(rep("ctrl.",nrow(dat.emsa.ctrl)),rep('mutant',nrow(dat.emsa.mt)))
-pd <-melt(dat.emsa,id=c("Time","genotype"),variable_name = "Stimuli")
+pd <-reshape::melt(dat.emsa,id=c("Time","genotype"),variable_name = "Stimuli")
 
 pd <-pd %>% group_by(genotype)%>%mutate(value=value/max(value))
 pd$Time <- pd$Time/60
 
-pd.2 <- pd[1,]
+pd.2 <- pd[1,]%>%as.data.frame(stringAsFactor=F)
+
 for(g in unique(pd$genotype))
   for(s in unique(pd$Stimuli)){
     tmp.pd <- pd %>% filter(genotype==g & Stimuli==s)
-    pd.2<-rbind(pd.2,data.frame(Time=seq(0,8,by=.1),
+    pd.2<-pd.2%>%rbind(data.frame(Time=seq(0,8,by=.1),
                           genotype=g,
                           Stimuli =s,
                           value=pchipfun(tmp.pd$Time,tmp.pd$value)(seq(0,8,by=.1)),stringsAsFactors = F))
@@ -224,9 +225,10 @@ if(F){
 }
 
 sp.mat <- read.csv(file='../data/mRNA.sp.peak.csv',row.names = 1,stringsAsFactors = F)
+all.equal(rownames(pd),rownames(sp.mat))
 sp.mat <- sp.mat[,1:6]
 sp.mat[sp.mat>3] <- 3; sp.mat[sp.mat < -3] <- -3 
-all.equal(rownames(pd),rownames(sp.mat))
+
 
 kord.sp.idx <- unlist(sapply(unique(pd$cate),function(x) which(pd$cate==x)))
 kord.sp.gaps <- cumsum(sapply(unique(pd$cate),function(x) sum(pd$cate==x)))
@@ -247,9 +249,8 @@ sapply(c(1,4),
 
 
 ### expression plot 
-pd.2 <- pd # backup 
 pd <- read.csv(file = '../data/mRNA.nfkbgene.rpkm.csv',stringsAsFactors = F,row.names = 1,header = T)
-
+all.equal(rownames(pd),rownames(sp.mat))
 # not include IL1
 pd.scale <- cbind(t(scale(t(pd[,1:14]))),
                   t(scale(t(pd[,22:35]))))

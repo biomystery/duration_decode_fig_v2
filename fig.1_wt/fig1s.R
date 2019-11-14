@@ -19,6 +19,3 @@ for(i in 1:177){
   cat(i)
 }
 dev.off()
-
-
-

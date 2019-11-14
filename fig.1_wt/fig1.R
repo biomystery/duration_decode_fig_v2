@@ -29,25 +29,7 @@ pd.max <- as.data.frame(pd.max) %>% mutate(gene=rownames(pd.max))%>%
   separate(condi,into = c("geno","sti","rep"))
 pd.max$geno<- recode(pd.max$geno,"ifnr"="Control","ifnrikba"="Mutant")
 
-
 plots <- lapply(unique(pd.max$geno), function(x){
-  pd.concord= pd.max %>% mutate(rep=paste0("r",rep))%>%
-     filter(geno==x)%>%
-    spread(key = rep,value = rpkm)%>% 
-    group_by(sti,geno) %>% 
-    summarise(concordance=ccc_fun(r1,r2))%>%
-    mutate(r1=1,r2=10)
-  ggplot(pd.max %>% mutate(rep=paste0("r",rep))%>%
-           filter(geno==x)%>%
-           spread(key = rep,value = rpkm),
-         aes(x = r1,y=r2)) + geom_point() + geom_abline(slope = 1,intercept =0,color="blue")+
-    facet_grid(geno~sti)  + geom_text(data = pd.concord,color="blue",
-                                      aes(label=paste0("concordance=",signif(concordance,2))))+
-    xlab("rep1 (log2(rpkm))") + ylab("rep2 (log2(rpkm)") + theme_bw()
-  
-})
-
-plots.2 <- lapply(unique(pd.max$geno), function(x){
   pd.concord= pd.max %>% mutate(rep=paste0("r",rep))%>%
     filter(geno==x)%>%
     spread(key = rep,value = rpkm)%>% 
@@ -63,7 +45,7 @@ plots.2 <- lapply(unique(pd.max$geno), function(x){
     xlab("rep1 (log2(rpkm))") + ylab("rep2 (log2(rpkm)") + theme_bw()
   
 })
-plots <- plots.2 # or comment out 
+
 plot_grid(plots[[1]],plots[[2]],labels = c("A","B"),ncol = 1)
 
 ggsave(filename = paste0(fig_dir,"fig1s.pdf"),width = 5,height = 4,
@@ -112,16 +94,17 @@ data.table::fwrite(data.frame(gene=rownames(sp.mat),
                   './data/gene.cat.csv')
 
 # plot 
-pd.scale <- cbind(t(scale(t(pd[,1:21]))),
-                  t(scale(t(pd[,43:63]))))
+pd.scale <- pd[,c(1:21,43:63)]
+pd.scale[,c(1:21)] <- pd.scale[,c(1:21)]/apply(pd.scale[,c(1:21)],1,max)
+pd.scale[,c(22:42)] <- pd.scale[,c(22:42)]/apply(pd.scale[,c(22:42)],1,max)
 
-pd.scale[pd.scale>3] <- 3; pd.scale[pd.scale< -3] <- -3
 pd.ord <-apply(pd.scale[,1:7],1, which.max)
 pd.ord <- (data.frame(pd.cate,pd.ord,id=seq(1:nrow(pd))) %>% arrange(pd.cate,pd.ord))
 fwrite(pd.ord,'data/fig1f.order.csv')
+
 seps<- sapply(1:3, function(i) max(which(pd.ord$pd.cate==i)))
-cols <- colorRampPalette(c("mediumblue", "white", "firebrick1"))(20)
-bks <- seq(-max(pd.scale),max(pd.scale),length.out = 21)
+cols <- colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(100)
+bks <- seq(0,max(pd.scale),length.out = 101)
 
 pheatmap(pd.scale[pd.ord$id,],scale = "none",cluster_cols = F,cluster_rows = F,color = cols,
          gaps_row  = seps,breaks = bks,gaps_col = grep("8",colnames(pd.scale)))

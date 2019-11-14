@@ -11,7 +11,7 @@ require(biomaRt)
 require(pracma)
 require(cowplot)
 require(ggpubr)
-
+require(data.table)
 require(gridExtra)
 require(tidyverse)
 
