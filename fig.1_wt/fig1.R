@@ -93,36 +93,8 @@ data.table::fwrite(data.frame(gene=rownames(sp.mat),
                              ifelse(pd.cate==2,'non-specific','LPS-specific'))),
                   './data/gene.cat.csv')
 
-# plot 
-if(T){
-  pd.scale <- pd[,c(1:21,43:63)]
-  pd.scale <- pd.scale/apply(pd.scale,1,max)
-  
-  pd.ord <-apply(pd.scale[,1:7],1, which.max)
-  pd.ord <- (data.frame(pd.cate,pd.ord,id=seq(1:nrow(pd))) %>% arrange(pd.cate,pd.ord))
-  seps<- sapply(1:3, function(i) max(which(pd.ord$pd.cate==i)))
-  cols <- colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(50)
-  bks <- seq(0,max(pd.scale),length.out = 51)
-  
-  pheatmap(pd.scale[pd.ord$id,],scale = "none",cluster_cols = F,cluster_rows = F,color = cols,
-           gaps_row  = seps,breaks = bks,gaps_col = grep("8",colnames(pd.scale)))
-  
-  seps <- seps+1
-  
-  sapply(1:2, 
-         function(i){
-           #i <-1
-           setEPS()
-           postscript(paste0(subfig_dir,"z_rpkm_genoScale_",i,"_2.eps"),onefile = F,width = 2,height = 6)
-           dat <- pd.scale[pd.ord$id,((i-1)*21+1):(i*21)]
-           pheatmap.2(pd=dat,bks=bks,cols = cols,cwid = 5,
-                      legend=F,gaps_col = grep('8',colnames(dat)))
-           dev.off()
-         })
-  
-}
 
-# plot 
+# plot , scale to row max for each rep
 pd.scale <- pd[,c(1:21,43:63)]
 pd.scale[,c(1:21)] <- pd.scale[,c(1:21)]/apply(pd.scale[,c(1:21)],1,max)
 pd.scale[,c(22:42)] <- pd.scale[,c(22:42)]/apply(pd.scale[,c(22:42)],1,max)
@@ -130,6 +102,9 @@ pd.scale[,c(22:42)] <- pd.scale[,c(22:42)]/apply(pd.scale[,c(22:42)],1,max)
 pd.ord <-apply(pd.scale[,1:7],1, which.max)
 pd.ord <- (data.frame(pd.cate,pd.ord,id=seq(1:nrow(pd))) %>% arrange(pd.cate,pd.ord))
 fwrite(pd.ord,'data/fig1f.order.csv')
+fwrite(pd.scale[pd.ord$id,],'./data/fig1f.csv',row.names = T)
+system('open ./data/fig1f.csv')
+
 
 seps<- sapply(1:3, function(i) max(which(pd.ord$pd.cate==i)))
 cols <- colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(50)

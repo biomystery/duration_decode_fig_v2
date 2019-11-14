@@ -3,11 +3,11 @@ subfig_dir <- '../figures/Fig.3/subfigs/'
 
 # Fig3A: wt  ---------------------------------------------------------------
 
-# do simulation for heatmap 
+# do simulation for heatmap, WARNING: take time + need multiple cores
 if(F){
   hfs<- 10^seq(0,3,length.out = 50)
   sim.data <- fun.runSim(hf = hfs,n = 6)
-  save(file = 'half-life-sim-ctrl.Rdata',sim.data)
+  save(file = './data/half-life-sim.Rdata',sim.data)
 }
  
 # heatmap
@@ -67,6 +67,13 @@ ggsave(filename = paste0(subfig_dir,'fig3a_ctrl_peak.eps'),
        plot = fig3a_dySp %+% subset(sum.sim1,ratio_type=='ratio.peak'),width = 1,height = 4,scale = 2.5/4)
 
 # Fig3B:mt hm ---------------------------------------------------------
+
+# do simulation for heatmap, WARNING: take time + need multiple cores
+if(F){
+  hfs<- 10^seq(0,3,length.out = 50)
+  sim.data <- fun.runSim(hf = hfs,n = 6,geno = 'mt')
+  save(file = './data/half-life-sim.Rdata',sim.data)
+}
 
 figs <-plotHMsim(geno='mt',forFig = T)
 setEPS()
