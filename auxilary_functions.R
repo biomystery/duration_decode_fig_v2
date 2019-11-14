@@ -730,6 +730,24 @@ genSimData <- function(){
   sim_data
 }
 
+plotLegend.2<- function(cols,bks,fnames,bks.label){
+  require(RColorBrewer)
+  #bks <- seq(round(min(rsums)),round(max(rsums))+1,length.out = 6)
+  #cols<- colorRampPalette(c( "white", "blueviolet"))(5)
+  #fnames<-'tmp.eps'
+  setEPS()
+  postscript(fnames,onefile = F,width = 0.1,height = 1)
+  par(mar=c(0.02, 0.04, 0.04,0.1))
+  barplot(rep(1,length(bks)-1),width=diff(bks),space = 0,border = NA,
+          col = cols,axes = F,horiz = T,
+          xaxs = "i", yaxs = "i",xlim = c(0,1),
+          ylim=c(0,sum(diff(bks)))
+          #xlim=c(0,1)
+  )
+  axis(4,labels = F,tck = 0.2,at=cumsum(diff(bks.label)))
+  box()
+  dev.off()
+}
 
 plotLegend <- function(cols,bks,fnames){
   require(RColorBrewer)
