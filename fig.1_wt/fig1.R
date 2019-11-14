@@ -156,8 +156,6 @@ plotLegend.2(cols = cols,
            bks.label = seq(0,1,by = .2),
            fnames = paste0(subfig_dir,"z_rpkm_batchScale_lg.eps"))
 
-fwrite(pd.scale[pd.ord$id,],'./data/fig1f.csv',row.names = T)
-system('open ./data/fig1f.csv')
 
 # Fig1D: sp scatter --------------------------------------------------------
 
