@@ -137,7 +137,7 @@ p<- p  + theme_bw()+ theme(axis.title = element_blank(),
 
 ggsave(filename = paste0(subfig_dir,'fig3_simCmp.eps'),height = 2,width = 2,plot = p)
 
-# Fig3D: LT.sp vs. half-life ---------------------------------------------------------
+# Fig3G: LT.sp vs. half-life ---------------------------------------------------------
 
 genes.hf <- read.csv(file="../data/v4-hf-final.csv",row.names = 1,stringsAsFactors = F)
 genes.sp <- read.csv(file="../data/mRNA.sp.peak.csv",row.names = 1,stringsAsFactors = F)
@@ -238,8 +238,8 @@ dev.off()
 
 plotLegend(cols,bks = bks,fnames = paste0(subfig_dir,'hf-heatmap-cnt-lg.eps'))
 
-# Fig3D: ActD example ------------------------------------------------------
-source("../../half-life/Supriya/ActDBrowser/auxfunctions.R")
+# Fig3E: ActD example ------------------------------------------------------
+source("~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/auxfunctions.R")
 pd.hf.raw <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/allNormCount.csv',
                       stringsAsFactors = F,row.names = 1)
 coldata <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/coldata.csv',stringsAsFactors = F,row.names = 1)
@@ -280,7 +280,7 @@ setEPS()
 postscript(paste0(subfig_dir,"./subfig3d_actD_eg.eps"),width = 2.5,height = 5)
 grid.arrange(p.all[[1]],p.all[[2]],p.all[[3]],p.all[[4]],ncol=1)
 dev.off()
-# Fig3E: half-life scatter  ------------------------------------------------------
+# Fig3F: half-life scatter  ------------------------------------------------------
 # load half-life results 
 pd.hf.all <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/final.genome.kdeg.csv',stringsAsFactors = F)
 pd.hf.all <- subset(pd.hf.all,ensembleID %in% kb.genes$ensembID)
@@ -300,7 +300,7 @@ pd <- pd[complete.cases(pd),]
 p1 <- ggplot(pd,aes(b1_0.0_U,b2_0.0_U)) + geom_point(alpha=0.2,colour='red') + 
   geom_smooth(method = 'lm') + xlab('Half-life (mins, rep.1)')+
   ylab('Half-life (mins, rep.2)') + scale_x_log10() + scale_y_log10()  +
-  annotate('text',x=20,y=10000,label='cor = 0.85',colour='#3366ff')
+  annotate('text',x=20,y=10000,label='r2 = 0.92',colour='#3366ff')
 
 p2 <- ggplot(pd%>%
                dplyr::select(b1_0.0_U),

@@ -48,7 +48,7 @@ pd.venn.ctrl <- getVennData(simplify = T,sp.th.val = .5,sp.mat = sp.mat,gtype = 
 setEPS()
 postscript(paste0(subfig_dir,"subfig1c_pie_th1_peak_gtype_","ko.eps"),
            onefile = F,width = 3,height = 3)
-pie(x = pd.venn.ctrl$Counts,labels = "",col = c(gray(.8),col.map['tnf'],col.map['lps']))
+pie(x = pd.venn.ctrl$Counts,labels = "",col = c(col.map.sp['ns'], col.map.sp['tnf'],col.map.sp['lps']))
 dev.off()
 
 # Fig2C: scatter of sp-------------------------------------------------------------------
@@ -80,9 +80,9 @@ ggsave(file=paste0(subfig_dir,'subfig2f.eps'),plot = p,width = 2.5,height = 2.5,
 
 ## save cate 
 pd <- pd %>% mutate(cate=ifelse(ctrl.sp<0.5,'I',
-                                ifelse(mt.sp>ctrl.sp*2^(-.5),'II','III')),
-                    cate2=ifelse(ctrl.sp<0.5,'I',
-                                 ifelse(mt.sp-ctrl.sp>=-.5,'II','III')))
+                                ifelse(mt.sp>ctrl.sp*2^(-.5),'II','III')))
+pd%>%pull(cate)%>%table
+
 pd$gene <- as.character(pd$gene)
 pd$gene[110] <- 'Ifi203'
 write.csv(pd,file = "./data/mRNA.cat.csv",quote = F)
@@ -103,10 +103,10 @@ ggsave(filename = paste0(subfig_dir,'subfig2g.eps'),plot = p,width = 2,height = 
 # Fig2S: FP genes & TP genes -------------------------------------------------------------------
 ev<- new.env(); load('../fig.4_modelv1/data/clustering_cateIII_clean.Rdata',ev)
 cat3.genes <- unique(ev$pd$gene)
-old_cat <- read.csv("./data/gene_cat.csv",stringsAsFactors = F)
-all(cat3.genes %in% old_cat$gene.2)
+old_cat <- read.csv("./data/mRNA.cat.csv",stringsAsFactors = F)
+all(cat3.genes %in% old_cat$gene)
 
-selc<- setdiff((old_cat%>%filter(cate=="III"))$gene.2,cat3.genes)
+selc<- setdiff((old_cat%>%filter(cate=="III"))$gene,cat3.genes)
 
 ## A scatter 
 sp.th <- 2^0.5
@@ -165,7 +165,7 @@ if(T){
 
 if(T){
   pdf(file=paste0(fig_dir,'Fig2s_D.pdf'))
-  selc.2<- intersect((old_cat%>%filter(cate=="III"))$gene.2,cat3.genes)
+  selc.2<- intersect((old_cat%>%filter(cate=="III"))$gene,cat3.genes)
   for(i in 1:9){
     p.TP<- fun.plotExp(rpkm_all,selc.2[((i-1)*9+1):(i*9)],scale = T)+ylab("Expression level (0-1)")  + chg_legend
     p.TP$facet$params$ncol=3
@@ -220,11 +220,13 @@ if(F){
   #fixed 7 genes 
   rownames(pd) <- pd$gene
   pd[selc,'cate'] <- 'II'
-  pd['Gdf15','cate'] <- 'I'
+  #pd['Gdf15','cate'] <- 'I'
   write.csv(pd,"./data/mRNA.cat.new.csv")
 }
 
+pd <- read.csv("./data/mRNA.cat.new.csv",stringsAsFactors = F,row.names = 1)
 sp.mat <- read.csv(file='../data/mRNA.sp.peak.csv',row.names = 1,stringsAsFactors = F)
+rownames(sp.mat)[110]<-'Ifi203'
 all.equal(rownames(pd),rownames(sp.mat))
 sp.mat <- sp.mat[,1:6]
 sp.mat[sp.mat>3] <- 3; sp.mat[sp.mat < -3] <- -3 
@@ -250,16 +252,16 @@ sapply(c(1,4),
 
 ### expression plot 
 pd <- read.csv(file = '../data/mRNA.nfkbgene.rpkm.csv',stringsAsFactors = F,row.names = 1,header = T)
+rownames(pd)[110]<-'Ifi203'
 all.equal(rownames(pd),rownames(sp.mat))
 # not include IL1
-pd.scale <- cbind(t(scale(t(pd[,1:14]))),
-                  t(scale(t(pd[,22:35]))))
+pd.scale <- cbind(pd[,1:14]/apply(pd[,1:14],1,max),pd[,22:35]/apply(pd[,22:35],1,max))
+                  
+all.equal(rownames(pd.scale),rownames(pd))
 
-pd.scale[pd.scale>3] <- 3; pd.scale[pd.scale< -3] <- -3
-all.equal(rownames(pd.scale),rownames(pd.2))
+cols <- colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(50)
+bks <- seq(0,max(pd.scale),length.out = 51)
 
-cols <- colorRampPalette(c("mediumblue", "white", "firebrick1"))(20)
-bks <- seq(-max(pd.scale),max(pd.scale),length.out = 21)
 sapply(c(1,15),  #c(1,22) for scaling including IL1
        function(i){
          #i <-1

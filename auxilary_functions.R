@@ -18,6 +18,7 @@ require(tidyverse)
 
 col.map.cap <- c(LPS="#f8766d",TNF="#00ba38",IL1="#619cff")
 col.map <- c(lps="#f8766d",tnf="#00ba38",il1="#619cff")
+col.map.sp <- c(lps="#ECE722",tnf="#1391b1",ns="#d6effd")
 
 col.sp <- rev(c(colorRampPalette(c( "#efee00", "azure"))(4),
               colorRampPalette(c( "azure", "#1080a3"))(4)))
@@ -678,7 +679,8 @@ fun.plotExp<- function(rpkm_all,selc,scale=F,wide=F){
   else
     p <- p+ facet_wrap(~gene,ncol = 1,scales = 'free_y')
   p <- p + geom_point(aes(shape=genotype))
-  p <- p + theme_bw() + scale_x_continuous(breaks = unique(pd$Time)) +  theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust = .5))
+  p <- p + theme_bw() + scale_x_continuous(breaks = unique(pd$Time)) + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust = .5),panel.grid.minor = element_blank())
   p<- p + xlab('Time (hr)') + ylab('RPKM')+  scale_colour_manual(values = col.map.cap)
   if(scale){
     pd.new<- p$data %>% group_by(gene,genotype) %>% mutate(value=value/max(value))
