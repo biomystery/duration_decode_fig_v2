@@ -238,6 +238,45 @@ dev.off()
 
 plotLegend(cols,bks = bks,fnames = paste0(subfig_dir,'hf-heatmap-cnt-lg.eps'))
 
+## export data 
+if(T){
+  kb.genes <- kb.genes[names(ord),]
+  pd.hf.raw[ord,]%>%rownames_to_column('ensembID')%>%left_join(kb.genes%>%select(gene,ensembID))%>%head(1)
+  pd.hf.raw[ord,]%>%rownames_to_column('ensembID')%>%right_join(kb.genes%>%select(gene,ensembID))%>%head(1)
+  fwrite(kb.genes[names(ord),]%>%select(gene,ensembID)%>%
+    left_join(pd.hf.raw[ord,]%>%rownames_to_column('ensembID')),
+    file = './data/nfkb.gene.normalisedCounts.actd.csv')
+  system('open ./data/nfkb.gene.normalisedCounts.actd.csv')
+  
+  ## log2FC
+  fwrite(kb.genes[names(ord),]%>%select(gene,ensembID)%>%
+           left_join(pd.hf.proc[ord,]%>%rownames_to_column('ensembID')),
+         file = './data/nfkb.gene.normalisedCounts.log2FC.actd.csv')
+  system('open ./data/nfkb.gene.normalisedCounts.log2FC.actd.csv')
+  
+  ## half life
+  fwrite(kb.genes[names(ord),]%>%select(gene,ensembID)%>%
+           left_join((pd.hf.pair.anno*60)[ord,]%>%rownames_to_column('ensembID')),
+         file = './data/nfkb.gene.hf.actd.csv',na = 'NA')
+  system('open ./data/nfkb.gene.hf.actd.csv')
+  
+  ## raw fitting 
+  fwrite(kb.genes[names(ord),]%>%select(gene,ensembID)%>%
+    left_join(by = c(ensembID="ensembleID"),pd.hf.all%>%unite(col = "val",sep = ':',remove = T,2:7)%>%spread(sample,val)%>%
+    separate(b1_0.0_U,
+             into = c("adjR2.rep1","kdeg.rep1","intersect.rep1","kdeg.se.rep1","startID.rep1","endID.rep1"),sep = ':')%>%
+    separate(b2_0.0_U,
+             into = c("adjR2.rep2","kdeg.rep2","intersect.rep2","kdeg.se.rep2","startID.rep2","endID.rep2"),sep = ':'))%>%
+      mutate(startID.rep2=as.integer(startID.rep2)-25,endID.rep2=as.integer(endID.rep2)-25),
+    file = './data/nfkb.gene.actd.res.csv',na = 'NA')
+  
+  system('open ./data/nfkb.gene.actd.res.csv')
+  
+  
+  
+  
+}
+
 # Fig3E: ActD example ------------------------------------------------------
 source("~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/auxfunctions.R")
 pd.hf.raw <- read.csv(file='~/Dropbox/Projects/DurationDecoding-code/half-life/Supriya/ActDBrowser/allNormCount.csv',

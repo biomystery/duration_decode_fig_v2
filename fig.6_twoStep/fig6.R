@@ -6,6 +6,8 @@ fig_dir <- "../figures/Fig.6/"
 
 rpkm.all<- read.csv(file='./data/rpkm.all.csv',stringsAsFactors = F,
                     row.names = 1)
+
+
 # pd.tc 
 pd.tc <- rpkm.all %>% group_by(Genotype,gene,Species)%>%
   mutate(max.rpkm = max(rpkm),
@@ -126,9 +128,25 @@ if(T){
 # C - heatmap of best Fit  ------------------------------------------------
 # prepare heatmap (simulation) data matrix 
 
-# 1. got the order of the genes from previous figure 
+# 1. got the order of the genes from previous figure & export data
 fig5.setting <- read_rds(path = "../fig.5_caRNA/data/pd.fig5.Rds")
 fig5.setting$row_names
+if(T){
+  rpkm.export <- rpkm.all%>%filter(gene%in%fig5.setting$row_names,Species=='caRNA')%>%
+    select(gene,Sample,rpkm)%>%spread(Sample,rpkm)%>%column_to_rownames("gene")
+  rpkm.export%>%head(1)
+  fwrite(rpkm.export[fig5.setting$row_names,],'./data/caRNA.rpkm.export.csv',row.names = T)
+  system('open ./data/caRNA.rpkm.export.csv')
+}
+
+if(T){
+  nrpkm.export <- pd.tc%>%ungroup%>%filter(gene%in%fig5.setting$row_names,Species=='caRNA')%>%
+    select(gene,Sample,frac.exp)%>%spread(Sample,frac.exp)%>%column_to_rownames("gene")
+  nrpkm.export%>%head(1)
+  fwrite(nrpkm.export[fig5.setting$row_names,],'./data/caRNA.nrpkm.export.csv',row.names = T)
+  system('open ./data/caRNA.nrpkm.export.csv')
+}
+
 
 # 2. get the simulation matrix 
 pd.fig6 <- list()
