@@ -1,5 +1,0 @@
-mRNA-Fit-avg-sp-v1: k0, kt, kd
-mRNA-Fit-avg-sp-v1b: k0, kt, kd, kneg
-mRNA-Fit-avg-sp-v1d: "n","kb","kt","Kd","k_deg","tau"
-mRNA-Fit-avg-sp-v1e: "n","kb","kt","Kd","k_deg","tau" (just did 9 more genes)
-mRNA-Fit-avg-sp-v1f: "kb","kt","Kd","k_deg","tau","TS"
