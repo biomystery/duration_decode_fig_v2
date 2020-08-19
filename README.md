@@ -1,4 +1,6 @@
-# Code and Data for manuscript `Gene regulatory strategies that decode the duration of NFkB dynamics contribute to LPS-vs. TNF-specific gene expression`
+# Duration decoding project 
+
+ Code and Data for paper *Cell Systems* 10, 169-182 [Gene Regulatory Strategies that Decode the Duration of NFκB Dynamics Contribute to LPS-versus TNF-Specific Gene Expression](https://www.sciencedirect.com/science/article/pii/S240547121930465X)
 
 This repo records how the figures, simulation and fitting performed for this manuscript. The codes are self-explained.
 
