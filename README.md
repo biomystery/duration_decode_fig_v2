@@ -1,6 +1,6 @@
 # Duration decoding project 
 
- Code and Data for paper *Cell Systems* 10, 169-182 [Gene Regulatory Strategies that Decode the Duration of NFκB Dynamics Contribute to LPS-versus TNF-Specific Gene Expression](https://www.sciencedirect.com/science/article/pii/S240547121930465X)
+ Code and Data for paper  [Gene Regulatory Strategies that Decode the Duration of NFκB Dynamics Contribute to LPS-versus TNF-Specific Gene Expression](https://www.sciencedirect.com/science/article/pii/S240547121930465X) **Cell Systems** 10, 169-182
 
 This repo records how the figures, simulation and fitting performed for this manuscript. The codes are self-explained.
 
